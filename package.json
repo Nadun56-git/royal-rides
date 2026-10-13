@@ -1,0 +1,8 @@
+{
+  "name": "royal-rides",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm --prefix client install && npm --prefix client run build"
+  }
+}
