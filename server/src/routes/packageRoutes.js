@@ -41,7 +41,7 @@ router.get(
       limit = 12,
     } = req.query;
 
-    const query = { isActive: true };
+    const query = req.query.all === 'true' || req.query.includeInactive === 'true' ? {} : { isActive: true };
 
     if (category) {
       const cats = Array.isArray(category) ? category : category.split(',');
@@ -226,7 +226,7 @@ router.get(
 router.post(
   '/',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
     const pkg = await TravelPackage.create({
       ...req.body,
@@ -240,7 +240,7 @@ router.post(
 router.put(
   '/:id',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
     const pkg = await TravelPackage.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -256,8 +256,13 @@ router.put(
 router.delete(
   '/:id',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
+    if (req.query.hard === 'true') {
+      const pkg = await TravelPackage.findByIdAndDelete(req.params.id);
+      if (!pkg) throw new AppError('Travel package not found', 404);
+      return sendSuccess(res, null, 'Travel package deleted permanently');
+    }
     const pkg = await TravelPackage.findByIdAndUpdate(
       req.params.id,
       { isActive: false },

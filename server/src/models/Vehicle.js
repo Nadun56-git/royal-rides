@@ -147,19 +147,19 @@ vehicleSchema.index({ '$**': 'text' }); // Full-text search
 
 // ── Virtual: Primary image ────────────────────────────────────────────────────
 vehicleSchema.virtual('primaryImage').get(function () {
-  const primary = this.images.find((img) => img.isPrimary);
+  if (!Array.isArray(this.images) || this.images.length === 0) return null;
+  const primary = this.images.find((img) => img?.isPrimary);
   return primary || this.images[0] || null;
 });
 
 // ── Pre-save: Auto-generate slug ──────────────────────────────────────────────
-vehicleSchema.pre('save', function (next) {
+vehicleSchema.pre('save', function () {
   if (this.isModified('name') && !this.slug) {
     this.slug = this.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') + '-' + Date.now();
   }
-  next();
 });
 
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);

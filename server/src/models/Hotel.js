@@ -160,13 +160,12 @@ hotelSchema.index({ starRating: 1, averageRating: -1 });
 hotelSchema.index({ name: 'text', description: 'text', city: 'text' });
 
 // ── Pre-save: Auto-generate slug ──────────────────────────────────────────────
-hotelSchema.pre('save', function (next) {
+hotelSchema.pre('save', function () {
   if (this.isModified('name') && !this.slug) {
     this.slug =
       this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') +
       '-' + Date.now();
   }
-  next();
 });
 
 const Hotel = mongoose.model('Hotel', hotelSchema);

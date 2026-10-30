@@ -44,7 +44,7 @@ router.get(
       search,
     } = req.query;
 
-    const query = { isActive: true };
+    const query = req.query.all === 'true' || req.query.includeInactive === 'true' ? {} : { isActive: true };
 
     if (category) {
       const cats = Array.isArray(category) ? category : category.split(',');
@@ -225,7 +225,7 @@ router.get(
 router.post(
   '/',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
     const vehicle = await Vehicle.create({
       ...req.body,
@@ -239,7 +239,7 @@ router.post(
 router.put(
   '/:id',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
     const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -255,8 +255,13 @@ router.put(
 router.delete(
   '/:id',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
+    if (req.query.hard === 'true') {
+      const vehicle = await Vehicle.findByIdAndDelete(req.params.id);
+      if (!vehicle) throw new AppError('Vehicle not found', 404);
+      return sendSuccess(res, null, 'Vehicle deleted permanently');
+    }
     const vehicle = await Vehicle.findByIdAndUpdate(
       req.params.id,
       { isActive: false },

@@ -11,6 +11,8 @@ import AppError from '../utils/AppError.js';
 import Contact from '../models/Contact.js';
 import { sendSuccess, sendCreated, sendPaginated, buildPaginationMeta } from '../utils/apiResponse.js';
 import { protect, restrict } from '../middleware/authMiddleware.js';
+import { sendContactConfirmation, sendContactNotification } from '../utils/mailer.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -32,6 +34,28 @@ router.post(
       message,
       inquiryType: inquiryType || 'general',
       ipAddress: req.ip,
+    });
+
+    // Send emails in parallel — failures are logged but do NOT break the 201 response
+    const emailPayload = {
+      name,
+      email: email.toLowerCase().trim(),
+      phone,
+      subject,
+      message,
+      inquiryType: inquiryType || 'general',
+      contactId: contact._id.toString(),
+    };
+
+    Promise.allSettled([
+      sendContactConfirmation(emailPayload),
+      sendContactNotification(emailPayload),
+    ]).then((results) => {
+      results.forEach((r, i) => {
+        if (r.status === 'rejected') {
+          logger.error(`Contact email [${i === 0 ? 'confirmation' : 'notification'}] failed: ${r.reason?.message}`);
+        }
+      });
     });
 
     sendCreated(res, contact, 'Thank you! Your inquiry has been received. Our team will contact you shortly.');
@@ -81,6 +105,19 @@ router.patch(
     await inquiry.save();
 
     sendSuccess(res, inquiry, 'Inquiry updated successfully');
+  })
+);
+
+// DELETE /api/v1/contact/:id - Admin delete inquiry
+router.delete(
+  '/:id',
+  protect,
+  restrict('admin', 'superadmin', 'manager'),
+  asyncHandler(async (req, res) => {
+    const inquiry = await Contact.findByIdAndDelete(req.params.id);
+    if (!inquiry) throw new AppError('Inquiry not found', 404);
+
+    sendSuccess(res, null, 'Inquiry deleted successfully');
   })
 );
 

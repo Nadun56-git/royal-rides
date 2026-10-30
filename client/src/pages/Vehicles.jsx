@@ -24,6 +24,14 @@ import VehicleBookingModal from '../components/vehicles/VehicleBookingModal';
 import api from '../services/api';
 import { useCurrencyStore } from '../store/useCurrencyStore';
 import { useWishlistStore } from '../store/useWishlistStore';
+import {
+  SplittingText,
+  StaggerContainer,
+  StaggerItem,
+  ScaleIn,
+  BlurIn,
+  FadeUp,
+} from '../components/ui/animate-ui';
 
 const CATEGORIES = ['All', 'Car', 'Van', 'Luxury Passenger Unit', 'SUV', 'Bus'];
 
@@ -93,38 +101,43 @@ export default function Vehicles() {
   return (
     <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
       {/* ── Page Header ────────────────────────────────────────────────────── */}
-      <div className="text-center max-w-3xl mx-auto space-y-3">
+      <BlurIn className="text-center max-w-3xl mx-auto space-y-3">
         <span className="text-xs font-bold uppercase tracking-widest text-gold">
           The Sovereign Fleet
         </span>
         <h1 className="font-serif text-4xl sm:text-5xl font-bold text-navy">
-          Luxury Cars, Executive Vans & Chauffeur Units
+          <SplittingText
+            text="Luxury Cars, Executive Vans & Chauffeur Units"
+            type="words"
+            delay={0.1}
+          />
         </h1>
         <p className="text-sm sm:text-base text-content-body leading-relaxed">
           Traverse emerald mountains and sun-drenched coastal highways with dedicated chauffeurs,
           pristine climate control, and transparent per-kilometer pricing.
         </p>
-      </div>
+      </BlurIn>
 
       {/* ── Filter & Search Control Bar ────────────────────────────────────── */}
-      <div className="glass-panel p-5 rounded-3xl border border-navy/10 shadow-soft space-y-4">
+      <FadeUp delay={0.1} className="glass-panel p-5 rounded-3xl border border-navy/10 shadow-soft space-y-4">
         {/* Category Chips */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <StaggerContainer className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" staggerDelay={0.05} delayChildren={0.1}>
           {CATEGORIES.map((cat) => (
-            <button
-              type="button"
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                selectedCategory === cat
-                  ? 'bg-navy text-gold shadow-md'
-                  : 'bg-pearl text-navy-800 hover:bg-navy/5'
-              }`}
-            >
-              {cat === 'All' ? 'All Vehicles' : cat}
-            </button>
+            <StaggerItem key={cat}>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                  selectedCategory === cat
+                    ? 'bg-navy text-gold shadow-md'
+                    : 'bg-pearl text-navy-800 hover:bg-navy/5'
+                }`}
+              >
+                {cat === 'All' ? 'All Vehicles' : cat}
+              </button>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Detailed Filters Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-navy/10 text-xs">
@@ -191,119 +204,130 @@ export default function Vehicles() {
             </select>
           </div>
         </div>
-      </div>
+      </FadeUp>
 
       {/* ── Vehicle Cards Grid ──────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[1, 2, 3, 4, 5, 6].map((n) => (
-            <div key={n} className="h-96 rounded-3xl skeleton-shimmer" />
+            <motion.div
+              key={n}
+              className="h-96 rounded-3xl skeleton-shimmer"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: n * 0.1 }}
+            />
           ))}
         </div>
       ) : vehicles.length === 0 ? (
-        <div className="text-center py-16 glass-card rounded-3xl border border-navy/10 space-y-3">
-          <Car className="w-12 h-12 text-gold mx-auto" />
-          <h3 className="font-serif text-2xl font-bold text-navy">No Matching Vehicles Found</h3>
-          <p className="text-xs text-content-body">
-            Please adjust your filters or contact our 24/7 concierge for custom fleet allocation.
-          </p>
-        </div>
+        <ScaleIn>
+          <BlurIn className="text-center py-16 glass-card rounded-3xl border border-navy/10 space-y-3">
+            <Car className="w-12 h-12 text-gold mx-auto" />
+            <h3 className="font-serif text-2xl font-bold text-navy">No Matching Vehicles Found</h3>
+            <p className="text-xs text-content-body">
+              Please adjust your filters or contact our 24/7 concierge for custom fleet allocation.
+            </p>
+          </BlurIn>
+        </ScaleIn>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerDelay={0.08}>
           {vehicles.map((veh) => (
-            <motion.div
-              key={veh._id}
-              layout
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="glass-card rounded-3xl overflow-hidden border border-navy/10 shadow-soft hover:shadow-premium transition-all duration-300 flex flex-col justify-between group"
-            >
-              {/* Image & Badges */}
-              <div className="relative h-60 overflow-hidden bg-pearl-200">
-                <img
-                  src={veh.images?.[0]?.url || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80'}
-                  alt={veh.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-navy/85 backdrop-blur-md text-gold text-[10px] font-bold uppercase tracking-wider border border-gold/30">
-                  {veh.category}
-                </div>
-
-                {/* Wishlist Button */}
-                <button
-                  type="button"
-                  onClick={() => toggleWishlist('Vehicle', veh._id)}
-                  aria-label={`Save ${veh.name} to wishlist`}
-                  className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-navy hover:bg-white hover:text-red-500 transition-colors shadow-sm"
-                >
-                  <Heart
-                    className={`w-4 h-4 ${
-                      isSaved(veh._id) ? 'fill-red-500 text-red-500' : 'text-navy'
-                    }`}
+            <StaggerItem key={veh._id}>
+              <motion.div
+                layout
+                className="glass-card rounded-3xl overflow-hidden border border-navy/10 shadow-soft hover:shadow-premium transition-all duration-300 flex flex-col justify-between group h-full"
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {/* Image & Badges */}
+                <div className="relative h-60 overflow-hidden bg-pearl-200">
+                  <motion.img
+                    src={veh.images?.[0]?.url || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80'}
+                    alt={veh.name}
+                    className="w-full h-full object-cover"
+                    whileHover={{ scale: 1.08 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   />
-                </button>
-              </div>
-
-              {/* Specs & Rates */}
-              <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-serif text-2xl font-bold text-navy group-hover:text-gold transition-colors">
-                    {veh.name}
-                  </h3>
-                  <p className="text-xs text-content-body mt-1 line-clamp-2">
-                    {veh.description || `${veh.make} ${veh.model} (${veh.year || 2024}) tailored for VIP travel.`}
-                  </p>
-
-                  <div className="grid grid-cols-3 gap-2 py-3 mt-3 border-y border-navy/10 text-center text-xs">
-                    <div>
-                      <span className="text-[10px] text-content-muted block uppercase">Seats</span>
-                      <span className="font-bold text-navy">{veh.passengerCapacity} Persons</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-content-muted block uppercase">Gearbox</span>
-                      <span className="font-bold text-navy">{veh.transmission}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-content-muted block uppercase">Per-KM</span>
-                      <span className="font-bold text-gold tabular-nums">{formatPrice(veh.perKmRate)}</span>
-                    </div>
+                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-navy/85 backdrop-blur-md text-gold text-[10px] font-bold uppercase tracking-wider border border-gold/30">
+                    {veh.category}
                   </div>
+
+                  {/* Wishlist Button */}
+                  <motion.button
+                    type="button"
+                    onClick={() => toggleWishlist('Vehicle', veh._id)}
+                    aria-label={`Save ${veh.name} to wishlist`}
+                    className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-navy hover:bg-white hover:text-red-500 transition-colors shadow-sm"
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        isSaved(veh._id) ? 'fill-red-500 text-red-500' : 'text-navy'
+                      }`}
+                    />
+                  </motion.button>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="pt-2 flex items-center justify-between gap-3">
+                {/* Specs & Rates */}
+                <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] text-content-muted uppercase">Daily Rate</span>
-                    <p className="font-serif text-2xl font-bold text-navy tabular-nums">
-                      {formatPrice(veh.dailyRate)}
+                    <h3 className="font-serif text-2xl font-bold text-navy group-hover:text-gold transition-colors">
+                      {veh.name}
+                    </h3>
+                    <p className="text-xs text-content-body mt-1 line-clamp-2">
+                      {veh.description || `${veh.make} ${veh.model} (${veh.year || 2024}) tailored for VIP travel.`}
                     </p>
+
+                    <div className="grid grid-cols-3 gap-2 py-3 mt-3 border-y border-navy/10 text-center text-xs">
+                      <div>
+                        <span className="text-[10px] text-content-muted block uppercase">Seats</span>
+                        <span className="font-bold text-navy">{veh.passengerCapacity} Persons</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-content-muted block uppercase">Gearbox</span>
+                        <span className="font-bold text-navy">{veh.transmission}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-content-muted block uppercase">Per-KM</span>
+                        <span className="font-bold text-gold tabular-nums">{formatPrice(veh.perKmRate)}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setCalcVehicle(veh)}
-                      className="px-3.5 py-2.5 rounded-xl border border-navy/20 text-xs font-bold text-navy hover:bg-navy hover:text-white transition-colors flex items-center gap-1.5"
-                      title="Calculate journey cost by distance"
-                    >
-                      <Navigation className="w-3.5 h-3.5 text-gold" />
-                      <span>Estimate</span>
-                    </button>
+                  {/* Action Buttons */}
+                  <div className="pt-2 flex items-center justify-between gap-3">
+                    <div>
+                      <span className="text-[10px] text-content-muted uppercase">Daily Rate</span>
+                      <p className="font-serif text-2xl font-bold text-navy tabular-nums">
+                        {formatPrice(veh.dailyRate)}
+                      </p>
+                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleLaunchBooking(veh)}
-                      className="btn-gold px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm"
-                    >
-                      Reserve
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCalcVehicle(veh)}
+                        className="px-3.5 py-2.5 rounded-xl border border-navy/20 text-xs font-bold text-navy hover:bg-navy hover:text-white transition-colors flex items-center gap-1.5"
+                        title="Calculate journey cost by distance"
+                      >
+                        <Navigation className="w-3.5 h-3.5 text-gold" />
+                        <span>Estimate</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleLaunchBooking(veh)}
+                        className="btn-gold px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm"
+                      >
+                        Reserve
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {/* ── Distance Calculator Modal ────────────────────────────────────────── */}

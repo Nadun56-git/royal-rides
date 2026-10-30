@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'staff', 'manager', 'super_admin'],
+      enum: ['customer', 'staff', 'manager', 'admin', 'super_admin'],
       default: 'customer',
     },
     isEmailVerified: {
@@ -125,7 +125,7 @@ userSchema.index({ createdAt: -1 });
 
 // ── Virtual: Full Name ────────────────────────────────────────────────────────
 userSchema.virtual('fullName').get(function () {
-  return `${this.firstName} ${this.lastName}`;
+  return `${this.firstName || ''} ${this.lastName || ''}`.trim();
 });
 
 // ── Pre-save: Hash password ───────────────────────────────────────────────────

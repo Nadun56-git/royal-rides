@@ -103,10 +103,10 @@ router.get(
 router.patch(
   '/admin/:id/role',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
     const { role } = req.body;
-    if (!['customer', 'staff', 'manager', 'admin'].includes(role)) {
+    if (!['customer', 'staff', 'manager', 'admin', 'super_admin'].includes(role)) {
       throw new AppError('Invalid role', 400);
     }
 
@@ -118,6 +118,22 @@ router.patch(
     if (!user) throw new AppError('User not found', 404);
 
     sendSuccess(res, user, `User role changed to ${role}`);
+  })
+);
+
+// DELETE /api/v1/users/admin/:id - Admin delete user
+router.delete(
+  '/admin/:id',
+  protect,
+  restrict('admin', 'superadmin'),
+  asyncHandler(async (req, res) => {
+    if (req.user._id.toString() === req.params.id) {
+      throw new AppError('You cannot delete your own admin account', 400);
+    }
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) throw new AppError('User not found', 404);
+
+    sendSuccess(res, null, 'User deleted successfully');
   })
 );
 

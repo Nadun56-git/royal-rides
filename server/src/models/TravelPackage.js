@@ -131,13 +131,12 @@ travelPackageSchema.index({ isFeatured: 1, isPopular: 1 });
 travelPackageSchema.index({ name: 'text', description: 'text', tagline: 'text' });
 
 // ── Pre-save: Auto-generate slug ──────────────────────────────────────────────
-travelPackageSchema.pre('save', function (next) {
+travelPackageSchema.pre('save', function () {
   if (this.isModified('name') && !this.slug) {
     this.slug =
       this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') +
       '-' + Date.now();
   }
-  next();
 });
 
 const TravelPackage = mongoose.model('TravelPackage', travelPackageSchema);

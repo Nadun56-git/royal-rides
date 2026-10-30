@@ -22,6 +22,7 @@ import Packages from './pages/Packages';
 import ExploreMap from './pages/ExploreMap';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/AdminLogin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Contact from './pages/Contact';
@@ -100,6 +101,9 @@ export default function App() {
             <Route path="/map" element={<ExploreMap />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admindashboard" element={<AdminDashboard />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/adminlogin" element={<AdminLogin />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/contact" element={<Contact />} />

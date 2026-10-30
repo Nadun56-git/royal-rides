@@ -48,7 +48,15 @@ export const restrict = (...roles) => {
     if (!req.user) {
       return next(new AppError('Authentication required.', 401));
     }
-    if (!roles.includes(req.user.role)) {
+    const userRole = req.user.role;
+    const allowed = roles.some((r) => {
+      if (r === userRole) return true;
+      const isAdminRole = ['admin', 'superadmin', 'super_admin'].includes(userRole);
+      if (['admin', 'superadmin', 'super_admin'].includes(r) && isAdminRole) return true;
+      return false;
+    });
+
+    if (!allowed) {
       return next(
         new AppError(
           `Access denied. Requires one of: ${roles.join(', ')}. Your role: ${req.user.role}`,

@@ -18,6 +18,8 @@ import CurrencyRate from '../models/CurrencyRate.js';
 import { generateBookingRef } from '../utils/bookingRef.js';
 import { sendSuccess, sendCreated, sendPaginated, buildPaginationMeta } from '../utils/apiResponse.js';
 import { protect, restrict, optionalAuth } from '../middleware/authMiddleware.js';
+import { sendHotelBookingConfirmation, sendHotelBookingNotification } from '../utils/mailer.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -160,6 +162,40 @@ router.post(
 
     await Hotel.findByIdAndUpdate(hotelId, { $inc: { totalBookings: 1 } });
 
+    // Send booking emails (non-blocking)
+    const guestName = booking.guestInfo?.name || 'Guest';
+    const guestEmail = booking.guestInfo?.email;
+    const guestPhone = booking.guestInfo?.phone;
+    if (guestEmail) {
+      const emailPayload = {
+        name: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+        bookingRef: booking.bookingRef,
+        hotelName: hotel.name,
+        hotelCity: hotel.city,
+        roomTypeName: booking.room?.roomTypeName,
+        checkIn: booking.checkIn,
+        checkOut: booking.checkOut,
+        nights: booking.nights,
+        rooms: booking.rooms,
+        guests: booking.guests,
+        totalLKR: booking.priceBreakdown.totalLKR,
+        bookingId: booking._id.toString(),
+      };
+
+      Promise.allSettled([
+        sendHotelBookingConfirmation(emailPayload),
+        sendHotelBookingNotification(emailPayload),
+      ]).then((results) => {
+        results.forEach((r, i) => {
+          if (r.status === 'rejected') {
+            logger.error(`Hotel booking email [${i === 0 ? 'confirmation' : 'notification'}] failed: ${r.reason?.message}`);
+          }
+        });
+      });
+    }
+
     sendCreated(res, booking, 'Hotel reservation confirmed successfully');
   })
 );
@@ -254,6 +290,19 @@ router.patch(
     await booking.save();
 
     sendSuccess(res, booking, `Booking status updated to ${booking.status}`);
+  })
+);
+
+// ── DELETE /api/v1/hotel-bookings/:id - Admin Delete ──────────────────────────
+router.delete(
+  '/:id',
+  protect,
+  restrict('admin', 'superadmin', 'manager'),
+  asyncHandler(async (req, res) => {
+    const booking = await HotelBooking.findByIdAndDelete(req.params.id);
+    if (!booking) throw new AppError('Booking not found', 404);
+
+    sendSuccess(res, null, 'Hotel booking deleted successfully');
   })
 );
 

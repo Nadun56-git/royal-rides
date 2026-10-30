@@ -19,6 +19,8 @@ import CurrencyRate from '../models/CurrencyRate.js';
 import { generateBookingRef } from '../utils/bookingRef.js';
 import { sendSuccess, sendCreated, sendPaginated, buildPaginationMeta } from '../utils/apiResponse.js';
 import { protect, restrict, optionalAuth } from '../middleware/authMiddleware.js';
+import { sendPackageBookingConfirmation, sendPackageBookingNotification } from '../utils/mailer.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -161,6 +163,39 @@ router.post(
 
     await TravelPackage.findByIdAndUpdate(packageId, { $inc: { totalBookings: 1 } });
 
+    // Send booking emails (non-blocking)
+    const guestName = booking.guestInfo?.name || 'Guest';
+    const guestEmail = booking.guestInfo?.email;
+    const guestPhone = booking.guestInfo?.phone;
+    if (guestEmail) {
+      const emailPayload = {
+        name: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+        bookingRef: booking.bookingRef,
+        packageName: pkg.name,
+        durationDays: pkg.durationDays,
+        durationNights: pkg.durationNights,
+        startDate: booking.startDate,
+        endDate: booking.endDate,
+        groupSize: booking.groupSize,
+        totalLKR: booking.priceBreakdown.totalLKR,
+        hasGuide: !!validGuideId,
+        bookingId: booking._id.toString(),
+      };
+
+      Promise.allSettled([
+        sendPackageBookingConfirmation(emailPayload),
+        sendPackageBookingNotification(emailPayload),
+      ]).then((results) => {
+        results.forEach((r, i) => {
+          if (r.status === 'rejected') {
+            logger.error(`Package booking email [${i === 0 ? 'confirmation' : 'notification'}] failed: ${r.reason?.message}`);
+          }
+        });
+      });
+    }
+
     sendCreated(res, booking, 'Package tour confirmed successfully');
   })
 );
@@ -259,6 +294,19 @@ router.patch(
     await booking.save();
 
     sendSuccess(res, booking, `Booking status updated to ${booking.status}`);
+  })
+);
+
+// ── DELETE /api/v1/package-bookings/:id - Admin Delete ─────────────────────────
+router.delete(
+  '/:id',
+  protect,
+  restrict('admin', 'superadmin', 'manager'),
+  asyncHandler(async (req, res) => {
+    const booking = await PackageBooking.findByIdAndDelete(req.params.id);
+    if (!booking) throw new AppError('Booking not found', 404);
+
+    sendSuccess(res, null, 'Package booking deleted successfully');
   })
 );
 

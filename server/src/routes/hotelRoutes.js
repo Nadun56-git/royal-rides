@@ -41,7 +41,7 @@ router.get(
       limit = 12,
     } = req.query;
 
-    const query = { isActive: true };
+    const query = req.query.all === 'true' || req.query.includeInactive === 'true' ? {} : { isActive: true };
 
     if (destination) query.destination = destination;
     if (city) query.city = { $regex: city, $options: 'i' };
@@ -223,7 +223,7 @@ router.get(
 router.post(
   '/',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
     const hotel = await Hotel.create(req.body);
     sendCreated(res, hotel, 'Hotel created successfully');
@@ -234,7 +234,7 @@ router.post(
 router.put(
   '/:id',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
     const hotel = await Hotel.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -250,8 +250,13 @@ router.put(
 router.delete(
   '/:id',
   protect,
-  restrict('admin', 'superadmin'),
+  restrict('admin', 'superadmin', 'manager'),
   asyncHandler(async (req, res) => {
+    if (req.query.hard === 'true') {
+      const hotel = await Hotel.findByIdAndDelete(req.params.id);
+      if (!hotel) throw new AppError('Hotel not found', 404);
+      return sendSuccess(res, null, 'Hotel deleted permanently');
+    }
     const hotel = await Hotel.findByIdAndUpdate(
       req.params.id,
       { isActive: false },

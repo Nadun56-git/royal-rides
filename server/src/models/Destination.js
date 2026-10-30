@@ -101,12 +101,11 @@ destinationSchema.index({ slug: 1 });
 destinationSchema.index({ isActive: 1, isFeatured: -1 });
 destinationSchema.index({ name: 'text', description: 'text' });
 
-destinationSchema.pre('save', function (next) {
+destinationSchema.pre('save', function () {
   if (this.isModified('name') && !this.slug) {
     this.slug =
       this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }
-  next();
 });
 
 const Destination = mongoose.model('Destination', destinationSchema);

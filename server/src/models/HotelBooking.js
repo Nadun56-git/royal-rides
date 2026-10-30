@@ -95,11 +95,10 @@ hotelBookingSchema.index({ 'room.roomTypeId': 1, checkIn: 1, checkOut: 1 });
 hotelBookingSchema.index({ status: 1, createdAt: -1 });
 
 // ── Pre-save: Generate booking reference ──────────────────────────────────────
-hotelBookingSchema.pre('save', function (next) {
+hotelBookingSchema.pre('save', function () {
   if (this.isNew && !this.bookingRef) {
     this.bookingRef = generateBookingRef('HT');
   }
-  next();
 });
 
 const HotelBooking = mongoose.model('HotelBooking', hotelBookingSchema);

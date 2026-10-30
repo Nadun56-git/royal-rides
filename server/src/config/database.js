@@ -9,15 +9,17 @@ import logger from './logger.js';
 let memoryServer = null;
 
 const connectDB = async () => {
+  const maskedUri = (process.env.MONGO_URI || '').replace(/:([^:@]+)@/, ':****@');
+
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 2500,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
     });
 
-    logger.info(`✅ MongoDB connected: ${conn.connection.host}`);
+    logger.info(`✅ MongoDB connected: ${conn.connection.host} (Database: ${conn.connection.name})`);
   } catch (error) {
-    logger.warn(`⚠️ External MongoDB (${process.env.MONGO_URI}) not reachable: ${error.message}`);
+    logger.warn(`⚠️ External MongoDB (${maskedUri}) not reachable: ${error.message}`);
     logger.info('🚀 Launching embedded in-memory MongoDB engine for zero-configuration operation…');
 
     try {

@@ -15,6 +15,7 @@ import TravelPackage from '../models/TravelPackage.js';
 import User from '../models/User.js';
 import Destination from '../models/Destination.js';
 import CurrencyRate from '../models/CurrencyRate.js';
+import Contact from '../models/Contact.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { protect, restrict } from '../middleware/authMiddleware.js';
 
@@ -42,6 +43,8 @@ router.get(
       packageCount,
       userCount,
       destCount,
+      totalInquiries,
+      newInquiries,
       vhBookings,
       htBookings,
       pkBookings,
@@ -54,6 +57,8 @@ router.get(
       TravelPackage.countDocuments({ isActive: true }),
       User.countDocuments(),
       Destination.countDocuments({ isActive: true }),
+      Contact.countDocuments(),
+      Contact.countDocuments({ status: 'new' }),
       VehicleBooking.find({ status: { $ne: 'cancelled' } }).select('priceBreakdown.totalLKR status createdAt'),
       HotelBooking.find({ status: { $ne: 'cancelled' } }).select('priceBreakdown.totalLKR status createdAt'),
       PackageBooking.find({ status: { $ne: 'cancelled' } }).select('priceBreakdown.totalLKR status createdAt'),
@@ -74,22 +79,45 @@ router.get(
     const pkPending = await PackageBooking.countDocuments({ status: 'pending' });
     const totalPending = vhPending + htPending + pkPending;
 
-    // Monthly revenue chart sample (past 6 months)
-    const months = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
-    const chartData = [
-      { month: 'May', vehicles: 450000, hotels: 720000, packages: 1200000, total: 2370000 },
-      { month: 'Jun', vehicles: 620000, hotels: 890000, packages: 1450000, total: 2960000 },
-      { month: 'Jul', vehicles: 780000, hotels: 1100000, packages: 1850000, total: 3730000 },
-      { month: 'Aug', vehicles: 950000, hotels: 1350000, packages: 2100000, total: 4400000 },
-      { month: 'Sep', vehicles: 820000, hotels: 1220000, packages: 1950000, total: 3990000 },
-      {
-        month: 'Oct',
-        vehicles: Math.max(1100000, vhRev),
-        hotels: Math.max(1600000, htRev),
-        packages: Math.max(2400000, pkRev),
-        total: Math.max(5100000, totalRevLKR),
-      },
-    ];
+    // Dynamically compute past 6 months revenue from real bookings
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const now = new Date();
+    const chartData = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const mIdx = d.getMonth();
+      const yr = d.getFullYear();
+      const mName = monthNames[mIdx];
+
+      const vhM = vhBookings
+        .filter((b) => {
+          const bd = new Date(b.createdAt);
+          return bd.getMonth() === mIdx && bd.getFullYear() === yr;
+        })
+        .reduce((sum, b) => sum + (b.priceBreakdown?.totalLKR || 0), 0);
+
+      const htM = htBookings
+        .filter((b) => {
+          const bd = new Date(b.createdAt);
+          return bd.getMonth() === mIdx && bd.getFullYear() === yr;
+        })
+        .reduce((sum, b) => sum + (b.priceBreakdown?.totalLKR || 0), 0);
+
+      const pkM = pkBookings
+        .filter((b) => {
+          const bd = new Date(b.createdAt);
+          return bd.getMonth() === mIdx && bd.getFullYear() === yr;
+        })
+        .reduce((sum, b) => sum + (b.priceBreakdown?.totalLKR || 0), 0);
+
+      chartData.push({
+        month: mName,
+        vehicles: vhM,
+        hotels: htM,
+        packages: pkM,
+        total: vhM + htM + pkM,
+      });
+    }
 
     // Recent 5 bookings from each category
     const [recentVh, recentHt, recentPk] = await Promise.all([
@@ -150,14 +178,25 @@ router.get(
     sendSuccess(res, {
       kpis: {
         totalBookings,
+        vhCount,
+        htCount,
+        pkCount,
         totalRevenueLKR: totalRevLKR,
         totalRevenueUSD: totalRevUSD,
+        vhRev,
+        htRev,
+        pkRev,
         totalPending,
+        vhPending,
+        htPending,
+        pkPending,
         activeVehicles: vehicleCount,
         activeHotels: hotelCount,
         activePackages: packageCount,
         registeredUsers: userCount,
         destinationsCount: destCount,
+        totalInquiries,
+        newInquiries,
         usdExchangeRate: usdRate,
       },
       chartData,

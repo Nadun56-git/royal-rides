@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Royal Rides — Luxury Home Page
  * Full-screen cinematic hero, floating glass search widget, live stats,
  * fleet showcase, boutique hotel highlights, package itineraries,
@@ -16,19 +16,18 @@ import HeroSearchWidget from "../components/home/HeroSearchWidget";
 import InteractiveSriLankaMap from "../components/map/InteractiveSriLankaMap";
 import api from "../services/api";
 import { useCurrencyStore } from "../store/useCurrencyStore";
-
-/** Reusable scroll-triggered fade-up wrapper */
-const FadeUp = ({ children, delay = 0, className = "" }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-60px" }}
-    transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
-    className={className}
-  >
-    {children}
-  </motion.div>
-);
+import {
+  FadeUp,
+  BlurIn,
+  ScaleIn,
+  SlideIn,
+  StaggerContainer,
+  StaggerItem,
+  SplittingText,
+  TypingText,
+  CountingNumber,
+  ScrollProgress,
+} from "../components/ui/animate-ui";
 
 const PILLARS = [
   { icon: Shield, title: "Chauffeur Mastery", desc: "SLTDA-certified, English-speaking professional drivers trained in defensive highway navigation, discretion, and deep cultural storytelling." },
@@ -59,6 +58,8 @@ export default function Home() {
 
   return (
     <div className="pb-20">
+      {/* Scroll Progress Bar */}
+      <ScrollProgress color="#C9A84C" />
 
       {/* ── 1. CINEMATIC HERO ─────────────────────────────────────────────────── */}
       <section className="relative min-h-[96vh] flex flex-col justify-center items-center pt-32 pb-24 px-4 overflow-hidden isolate">
@@ -89,17 +90,43 @@ export default function Home() {
             <span>Royal Rides &mdash; Sri Lanka&apos;s Premier Chauffeur Fleet</span>
           </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }} className="font-serif text-5xl sm:text-6xl lg:text-[5.5rem] font-bold text-white tracking-tight leading-[1.05] drop-shadow-[0_6px_32px_rgba(0,0,0,0.5)]">
-            Experience Ceylon<br className="hidden sm:block" />
-            <span className="text-gold"> in Sovereign Luxury</span>
+          <motion.h1
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="font-serif text-5xl sm:text-6xl lg:text-[5.5rem] font-bold text-white tracking-tight leading-[1.05] drop-shadow-[0_6px_32px_rgba(0,0,0,0.5)]"
+          >
+            <SplittingText
+              text="Experience Ceylon"
+              type="words"
+              delay={0.3}
+              className="block"
+            />
+            <span className="text-gold block">
+              <SplittingText
+                text="in Sovereign Luxury"
+                type="words"
+                delay={0.55}
+              />
+            </span>
           </motion.h1>
 
-          <motion.p initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.38, ease: [0.22, 1, 0.36, 1] }} className="text-base sm:text-xl text-white/80 max-w-2xl mx-auto font-light leading-relaxed">
-            Chauffeur-driven executive fleets, handpicked colonial sanctuaries, and custom private expeditions across paradise.
+          <motion.p
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            className="text-base sm:text-xl text-white/80 max-w-2xl mx-auto font-light leading-relaxed"
+          >
+            <TypingText
+              text="Chauffeur-driven executive fleets, handpicked colonial sanctuaries, and custom private expeditions across paradise."
+              speed={28}
+              delay={1.0}
+              showCursor={false}
+            />
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }} className="flex flex-wrap justify-center gap-2.5 pt-2">
-            {[{ icon: CheckCircle2, label: "SLTDA Certified" }, { icon: Shield, label: "Zero Hidden Fees" }, { icon: Star, label: "4.9\u2605 Rated" }, { icon: Clock, label: "24/7 Concierge" }].map(({ icon: Icon, label }) => (
+            {[{ icon: CheckCircle2, label: "SLTDA Certified" }, { icon: Shield, label: "Zero Hidden Fees" }, { icon: Star, label: "4.9★ Rated" }, { icon: Clock, label: "24/7 Concierge" }].map(({ icon: Icon, label }) => (
               <span key={label} className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/85 text-[11px] font-semibold tracking-wide">
                 <Icon className="w-3 h-3 text-gold flex-shrink-0" />{label}
               </span>
@@ -119,39 +146,56 @@ export default function Home() {
 
       {/* ── 2. STATS BAR ─────────────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-30">
-        <motion.div initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }} className="glass-card rounded-3xl p-6 sm:p-10 shadow-elevated border border-navy/8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {[{ value: "15,000+", label: "VIP Journeys Crafted" }, { value: "120+", label: "Luxury Chauffeur Fleet" }, { value: "48+", label: "Curated Destinations" }, { value: "4.9\u2605", label: "Customer Excellence" }].map(({ value, label }, i) => (
-            <motion.div key={label} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}>
-              <span className="font-serif text-3xl sm:text-4xl font-bold text-navy block">{value}</span>
+        <FadeUp className="glass-card rounded-3xl p-6 sm:p-10 shadow-elevated border border-navy/8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {[
+            { value: 15000, label: "VIP Journeys Crafted", suffix: "+" },
+            { value: 120, label: "Luxury Chauffeur Fleet", suffix: "+" },
+            { value: 48, label: "Curated Destinations", suffix: "+" },
+            { value: "4.9★", label: "Customer Excellence" },
+          ].map(({ value, label, suffix }, i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <span className="font-serif text-3xl sm:text-4xl font-bold text-navy block">
+                {typeof value === 'number' ? (
+                  <CountingNumber value={value} suffix={suffix || ''} duration={2} />
+                ) : (
+                  value
+                )}
+              </span>
               <span className="text-xs uppercase tracking-wider text-gold font-bold mt-1.5 block">{label}</span>
             </motion.div>
           ))}
-        </motion.div>
+        </FadeUp>
       </section>
 
       {/* ── 3. WHY ROYAL RIDES ───────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
-        <FadeUp className="text-center max-w-2xl mx-auto mb-14 space-y-2">
+        <BlurIn className="text-center max-w-2xl mx-auto mb-14 space-y-2">
           <span className="text-xs font-bold uppercase tracking-widest text-gold">Uncompromising Standards</span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-navy">Why Travelers Choose Royal Rides</h2>
           <p className="text-sm text-content-body leading-relaxed">Setting the benchmark for safety, discreet luxury, and warm Sri Lankan hospitality.</p>
-        </FadeUp>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PILLARS.map(({ icon: Icon, title, desc }, i) => (
-            <FadeUp key={title} delay={i * 0.13}>
+        </BlurIn>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" staggerDelay={0.13}>
+          {PILLARS.map(({ icon: Icon, title, desc }) => (
+            <StaggerItem key={title}>
               <div className="glass-card p-8 rounded-3xl border border-navy/10 space-y-4 hover:shadow-elevated hover:-translate-y-2 transition-all duration-500 cursor-default h-full">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-navy to-navy-700 text-gold flex items-center justify-center shadow-md"><Icon className="w-6 h-6" /></div>
                 <h3 className="font-serif text-xl font-bold text-navy">{title}</h3>
                 <p className="text-sm text-content-body leading-relaxed">{desc}</p>
               </div>
-            </FadeUp>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </section>
 
       {/* ── 4. FLEET ─────────────────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
-        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <BlurIn className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-gold">Prestige Mobility</span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-navy mt-1">The Royal Fleet</h2>
@@ -161,13 +205,19 @@ export default function Home() {
             <span>Explore All Vehicles</span>
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
           </Link>
-        </FadeUp>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {vehiclesToDisplay.map((veh, i) => (
-            <FadeUp key={veh._id} delay={i * 0.1}>
+        </BlurIn>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" staggerDelay={0.1}>
+          {vehiclesToDisplay.map((veh) => (
+            <StaggerItem key={veh._id}>
               <div className="glass-card rounded-3xl overflow-hidden border border-navy/10 shadow-soft hover:shadow-elevated hover:-translate-y-2 transition-all duration-500 flex flex-col group h-full">
                 <div className="relative h-56 overflow-hidden bg-pearl-200 flex-shrink-0">
-                  <img src={veh.images?.[0]?.url} alt={veh.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }} />
+                  <motion.img
+                    src={veh.images?.[0]?.url}
+                    alt={veh.name}
+                    className="w-full h-full object-cover"
+                    whileHover={{ scale: 1.08 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-navy-950/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-navy/90 backdrop-blur-md text-gold text-[10px] font-bold uppercase tracking-wider border border-gold/30">{veh.category}</div>
                 </div>
@@ -191,24 +241,24 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </FadeUp>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </section>
 
       {/* ── 5. MAP ───────────────────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
-        <FadeUp className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+        <BlurIn className="text-center max-w-2xl mx-auto mb-10 space-y-2">
           <span className="text-xs font-bold uppercase tracking-widest text-gold">Geospatial Exploration</span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-navy">Interactive Island Tourism &amp; Safety Map</h2>
           <p className="text-sm text-content-body leading-relaxed">Locate ancient heritage fortresses, high-altitude tea trails, nearby police outposts, and certified sanitary travel lounges in real-time.</p>
-        </FadeUp>
+        </BlurIn>
         <FadeUp delay={0.1}><InteractiveSriLankaMap /></FadeUp>
       </section>
 
       {/* ── 6. PACKAGES ──────────────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
-        <FadeUp className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <BlurIn className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-gold">Signature Odysseys</span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-navy mt-1">Handcrafted Travel Circuits</h2>
@@ -218,51 +268,59 @@ export default function Home() {
             <span>View All Packages</span>
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
           </Link>
-        </FadeUp>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PACKAGES.map(({ img, alt, badge, tag, title, desc, price }, i) => (
-            <FadeUp key={title} delay={i * 0.1}>
-              <div className="glass-card rounded-3xl overflow-hidden border border-navy/10 shadow-soft hover:shadow-elevated hover:-translate-y-2 transition-all duration-500 group h-full flex flex-col">
-                <div className="h-52 overflow-hidden relative flex-shrink-0">
-                  <img src={img} alt={alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 via-navy-950/10 to-transparent" />
-                  <span className="absolute bottom-3 left-3 bg-navy/90 backdrop-blur-sm text-gold text-xs px-3 py-1 rounded-full font-bold border border-gold/30">{badge}</span>
-                </div>
-                <div className="p-6 space-y-3 flex-1 flex flex-col">
-                  <span className="text-[11px] uppercase tracking-wider font-bold text-gold">{tag}</span>
-                  <h3 className="font-serif text-xl font-bold text-navy group-hover:text-gold transition-colors duration-300">{title}</h3>
-                  <p className="text-xs text-content-body leading-relaxed flex-1">{desc}</p>
-                  <div className="pt-3 border-t border-navy/10 flex justify-between items-center mt-auto">
-                    <span className="font-serif font-bold text-lg text-navy">{formatPrice(price)} <span className="text-xs font-normal text-content-muted">/ person</span></span>
-                    <Link to="/packages" className="btn-navy px-4 py-2 rounded-xl text-xs font-semibold">View Tour</Link>
+        </BlurIn>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" staggerDelay={0.12}>
+          {PACKAGES.map(({ img, alt, badge, tag, title, desc, price }) => (
+            <StaggerItem key={title}>
+              <ScaleIn>
+                <div className="glass-card rounded-3xl overflow-hidden border border-navy/10 shadow-soft hover:shadow-elevated hover:-translate-y-2 transition-all duration-500 group h-full flex flex-col">
+                  <div className="h-52 overflow-hidden relative flex-shrink-0">
+                    <motion.img
+                      src={img}
+                      alt={alt}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.08 }}
+                      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 via-navy-950/10 to-transparent" />
+                    <span className="absolute bottom-3 left-3 bg-navy/90 backdrop-blur-sm text-gold text-xs px-3 py-1 rounded-full font-bold border border-gold/30">{badge}</span>
+                  </div>
+                  <div className="p-6 space-y-3 flex-1 flex flex-col">
+                    <span className="text-[11px] uppercase tracking-wider font-bold text-gold">{tag}</span>
+                    <h3 className="font-serif text-xl font-bold text-navy group-hover:text-gold transition-colors duration-300">{title}</h3>
+                    <p className="text-xs text-content-body leading-relaxed flex-1">{desc}</p>
+                    <div className="pt-3 border-t border-navy/10 flex justify-between items-center mt-auto">
+                      <span className="font-serif font-bold text-lg text-navy">{formatPrice(price)} <span className="text-xs font-normal text-content-muted">/ person</span></span>
+                      <Link to="/packages" className="btn-navy px-4 py-2 rounded-xl text-xs font-semibold">View Tour</Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </FadeUp>
+              </ScaleIn>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </section>
 
       {/* ── 7. CONCIERGE CTA ─────────────────────────────────────────────────── */}
-      <FadeUp className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
         <div className="rounded-3xl bg-gradient-to-br from-navy-deep via-navy to-navy-700 p-8 sm:p-14 text-white relative overflow-hidden shadow-elevated border border-gold/20 flex flex-col md:flex-row items-center justify-between gap-10">
           <div className="absolute -top-24 -right-16 w-80 h-80 bg-gold/8 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="space-y-3 max-w-xl z-10 relative">
+          <SlideIn from="left" className="space-y-3 max-w-xl z-10 relative">
             <span className="text-xs font-bold uppercase tracking-widest text-gold flex items-center gap-1.5">
               <Sparkles className="w-4 h-4" /> Customized Chauffeur Arrangements
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-snug">Require a Custom Chauffeur Route or Diplomatic Escort?</h2>
             <p className="text-sm text-pearl-200/70 leading-relaxed">Our Colombo operations desk is on standby 24/7 to orchestrate complex multi-city circuits, wedding motorcades, or corporate delegate transport.</p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 z-10 relative shrink-0">
+          </SlideIn>
+          <SlideIn from="right" className="flex flex-col sm:flex-row gap-3 z-10 relative shrink-0">
             <a href="tel:0718282758" className="btn-gold px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-premium hover:scale-105 active:scale-95 transition-transform duration-300">
               <PhoneCall className="w-4 h-4" /><span>Call +94 71 828 2758</span>
             </a>
             <Link to="/contact" className="px-6 py-3.5 rounded-2xl border border-white/25 text-xs sm:text-sm font-bold text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 text-center">Send Custom Inquiry</Link>
-          </div>
+          </SlideIn>
         </div>
-      </FadeUp>
+      </div>
 
     </div>
   );

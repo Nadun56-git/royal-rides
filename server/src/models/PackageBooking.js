@@ -96,11 +96,10 @@ packageBookingSchema.index({ user: 1, status: 1 });
 packageBookingSchema.index({ package: 1, startDate: 1 });
 packageBookingSchema.index({ status: 1, createdAt: -1 });
 
-packageBookingSchema.pre('save', function (next) {
+packageBookingSchema.pre('save', function () {
   if (this.isNew && !this.bookingRef) {
     this.bookingRef = generateBookingRef('PK');
   }
-  next();
 });
 
 const PackageBooking = mongoose.model('PackageBooking', packageBookingSchema);

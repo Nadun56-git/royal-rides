@@ -23,6 +23,14 @@ import HotelBookingModal from '../components/hotels/HotelBookingModal';
 import api from '../services/api';
 import { useCurrencyStore } from '../store/useCurrencyStore';
 import { useWishlistStore } from '../store/useWishlistStore';
+import {
+  SplittingText,
+  StaggerContainer,
+  StaggerItem,
+  FadeUp,
+  BlurIn,
+  ScaleIn,
+} from '../components/ui/animate-ui';
 
 const CITIES = ['All', 'Galle', 'Sigiriya', 'Ella', 'Nuwara Eliya', 'Colombo', 'Yala', 'Mirissa'];
 
@@ -74,37 +82,42 @@ export default function Hotels() {
   return (
     <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
       {/* ── Page Header ────────────────────────────────────────────────────── */}
-      <div className="text-center max-w-3xl mx-auto space-y-3">
+      <BlurIn className="text-center max-w-3xl mx-auto space-y-3">
         <span className="text-xs font-bold uppercase tracking-widest text-gold">
           Exclusive Sanctuaries
         </span>
         <h1 className="font-serif text-4xl sm:text-5xl font-bold text-navy">
-          Boutique Hotels, Colonial Tea Bungalows & Ocean Villas
+          <SplittingText
+            text="Boutique Hotels, Colonial Tea Bungalows & Ocean Villas"
+            type="words"
+            delay={0.1}
+          />
         </h1>
         <p className="text-sm sm:text-base text-content-body leading-relaxed">
           Unwind in handpicked Sri Lankan luxury havens with seasonal promotional rates,
           transparent cancellation terms, and verified guest reviews.
         </p>
-      </div>
+      </BlurIn>
 
       {/* ── Filter Bar ──────────────────────────────────────────────────────── */}
-      <div className="glass-panel p-5 rounded-3xl border border-navy/10 shadow-soft space-y-4">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+      <FadeUp delay={0.1} className="glass-panel p-5 rounded-3xl border border-navy/10 shadow-soft space-y-4">
+        <StaggerContainer className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" staggerDelay={0.05} delayChildren={0.1}>
           {CITIES.map((city) => (
-            <button
-              type="button"
-              key={city}
-              onClick={() => setSelectedCity(city)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                selectedCity === city
-                  ? 'bg-navy text-gold shadow-md'
-                  : 'bg-pearl text-navy-800 hover:bg-navy/5'
-              }`}
-            >
-              {city === 'All' ? 'All Island Regions' : city}
-            </button>
+            <StaggerItem key={city}>
+              <button
+                type="button"
+                onClick={() => setSelectedCity(city)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                  selectedCity === city
+                    ? 'bg-navy text-gold shadow-md'
+                    : 'bg-pearl text-navy-800 hover:bg-navy/5'
+                }`}
+              >
+                {city === 'All' ? 'All Island Regions' : city}
+              </button>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-navy/10 text-xs">
           <div>
@@ -145,25 +158,32 @@ export default function Hotels() {
             </span>
           </div>
         </div>
-      </div>
+      </FadeUp>
 
       {/* ── Hotels Grid ─────────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[1, 2, 3, 4, 5, 6].map((n) => (
-            <div key={n} className="h-96 rounded-3xl skeleton-shimmer" />
+            <motion.div
+              key={n}
+              className="h-96 rounded-3xl skeleton-shimmer"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: n * 0.1 }}
+            />
           ))}
         </div>
       ) : hotels.length === 0 ? (
-        <div className="text-center py-16 glass-card rounded-3xl border border-navy/10 space-y-3">
-          <Hotel className="w-12 h-12 text-gold mx-auto" />
-          <h3 className="font-serif text-2xl font-bold text-navy">No Hotels Found</h3>
-          <p className="text-xs text-content-body">
-            Please adjust your search criteria or contact our concierge for bespoke lodging options.
-          </p>
-        </div>
+        <ScaleIn>
+          <BlurIn className="text-center py-16 glass-card rounded-3xl border border-navy/10 space-y-3">
+            <Hotel className="w-12 h-12 text-gold mx-auto" />
+            <h3 className="font-serif text-2xl font-bold text-navy">No Hotels Found</h3>
+            <p className="text-xs text-content-body">
+              Please adjust your search criteria or contact our concierge for bespoke lodging options.
+            </p>
+          </BlurIn>
+        </ScaleIn>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerDelay={0.08}>
           {hotels.map((htl) => {
             const minRoomPrice =
               htl.rooms?.length > 0
@@ -171,92 +191,105 @@ export default function Hotels() {
                 : 45000;
 
             return (
-              <motion.div
-                key={htl._id}
-                layout
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className="glass-card rounded-3xl overflow-hidden border border-navy/10 shadow-soft hover:shadow-premium transition-all duration-300 flex flex-col justify-between group"
-              >
-                {/* Cover Image & Badges */}
-                <div className="relative h-60 overflow-hidden bg-pearl-200">
-                  <img
-                    src={htl.coverImage || htl.images?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80'}
-                    alt={htl.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-navy/85 backdrop-blur-md text-gold text-[10px] font-bold flex items-center gap-1 border border-gold/30">
-                    <Star className="w-3 h-3 fill-gold text-gold" />
-                    <span>{htl.starRating}-Star Luxury</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => toggleWishlist('Hotel', htl._id)}
-                    aria-label={`Save ${htl.name} to wishlist`}
-                    className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-navy hover:bg-white hover:text-red-500 transition-colors shadow-sm"
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        isSaved(htl._id) ? 'fill-red-500 text-red-500' : 'text-navy'
-                      }`}
+              <StaggerItem key={htl._id}>
+                <motion.div
+                  layout
+                  className="glass-card rounded-3xl overflow-hidden border border-navy/10 shadow-soft hover:shadow-premium transition-all duration-300 flex flex-col justify-between group h-full"
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {/* Cover Image & Badges */}
+                  <div className="relative h-60 overflow-hidden bg-pearl-200">
+                    <motion.img
+                      src={htl.coverImage || htl.images?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80'}
+                      alt={htl.name}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.08 }}
+                      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     />
-                  </button>
-                </div>
-
-                {/* Hotel Details */}
-                <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-1 text-xs text-gold font-semibold mb-1">
-                      <MapPin className="w-3.5 h-3.5 shrink-0" />
-                      <span>{htl.city}, Sri Lanka</span>
+                    <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-navy/85 backdrop-blur-md text-gold text-[10px] font-bold flex items-center gap-1 border border-gold/30">
+                      <Star className="w-3 h-3 fill-gold text-gold" />
+                      <span>{htl.starRating}-Star Luxury</span>
                     </div>
 
-                    <h3 className="font-serif text-2xl font-bold text-navy group-hover:text-gold transition-colors">
-                      {htl.name}
-                    </h3>
-
-                    <p className="text-xs text-content-body mt-2 line-clamp-2 leading-relaxed">
-                      {htl.shortDescription || htl.description}
-                    </p>
-
-                    {/* Amenities Tags */}
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {htl.amenities?.slice(0, 4).map((am) => (
-                        <span
-                          key={am}
-                          className="px-2 py-0.5 rounded-md bg-pearl text-[10px] font-medium text-navy-800 border border-navy/10"
-                        >
-                          {am}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Pricing & Booking CTA */}
-                  <div className="pt-4 border-t border-navy/10 flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] text-content-muted uppercase">Starting from</span>
-                      <p className="font-serif text-2xl font-bold text-navy tabular-nums">
-                        {formatPrice(minRoomPrice)}
-                        <span className="text-xs font-sans text-content-muted font-normal"> / night</span>
-                      </p>
-                    </div>
-
-                    <button
+                    <motion.button
                       type="button"
-                      onClick={() => setBookingHotel(htl)}
-                      className="btn-gold px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm"
+                      onClick={() => toggleWishlist('Hotel', htl._id)}
+                      aria-label={`Save ${htl.name} to wishlist`}
+                      className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-navy hover:bg-white hover:text-red-500 transition-colors shadow-sm"
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.9 }}
                     >
-                      Book Room
-                    </button>
+                      <Heart
+                        className={`w-4 h-4 ${
+                          isSaved(htl._id) ? 'fill-red-500 text-red-500' : 'text-navy'
+                        }`}
+                      />
+                    </motion.button>
                   </div>
-                </div>
-              </motion.div>
+
+                  {/* Hotel Details */}
+                  <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-1 text-xs text-gold font-semibold mb-1">
+                        <MapPin className="w-3.5 h-3.5 shrink-0" />
+                        <span>{htl.city}, Sri Lanka</span>
+                      </div>
+
+                      <h3 className="font-serif text-2xl font-bold text-navy group-hover:text-gold transition-colors">
+                        {htl.name}
+                      </h3>
+
+                      <p className="text-xs text-content-body mt-2 line-clamp-2 leading-relaxed">
+                        {htl.shortDescription || htl.description}
+                      </p>
+
+                      {/* Amenities Tags */}
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {htl.amenities?.slice(0, 4).map((am) => (
+                          <span
+                            key={am}
+                            className="px-2 py-0.5 rounded-md bg-pearl text-[10px] font-medium text-navy-800 border border-navy/10"
+                          >
+                            {am}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Rating Stars with ScaleIn stagger */}
+                      <div className="flex items-center gap-1 mt-3">
+                        {Array.from({ length: htl.starRating || 5 }).map((_, i) => (
+                          <ScaleIn key={i} delay={i * 0.07}>
+                            <Star className="w-3.5 h-3.5 fill-gold text-gold" />
+                          </ScaleIn>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Pricing & Booking CTA */}
+                    <div className="pt-4 border-t border-navy/10 flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] text-content-muted uppercase">Starting from</span>
+                        <p className="font-serif text-2xl font-bold text-navy tabular-nums">
+                          {formatPrice(minRoomPrice)}
+                          <span className="text-xs font-sans text-content-muted font-normal"> / night</span>
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setBookingHotel(htl)}
+                        className="btn-gold px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm"
+                      >
+                        Book Room
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
       )}
 
       {/* ── Hotel Booking Modal ─────────────────────────────────────────────── */}

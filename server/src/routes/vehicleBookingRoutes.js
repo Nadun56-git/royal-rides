@@ -17,6 +17,8 @@ import CurrencyRate from '../models/CurrencyRate.js';
 import { generateBookingRef } from '../utils/bookingRef.js';
 import { sendSuccess, sendCreated, sendPaginated, buildPaginationMeta } from '../utils/apiResponse.js';
 import { protect, restrict, optionalAuth } from '../middleware/authMiddleware.js';
+import { sendVehicleBookingConfirmation, sendVehicleBookingNotification } from '../utils/mailer.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 
@@ -149,6 +151,39 @@ router.post(
     // Increment booking count on vehicle
     await Vehicle.findByIdAndUpdate(vehicleId, { $inc: { totalBookings: 1 } });
 
+    // Send booking emails (non-blocking — failures are logged)
+    const guestName = booking.guestInfo?.name || 'Guest';
+    const guestEmail = booking.guestInfo?.email;
+    const guestPhone = booking.guestInfo?.phone;
+    if (guestEmail) {
+      const emailPayload = {
+        name: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+        bookingRef: booking.bookingRef,
+        vehicleName: vehicle.name,
+        pickupLocation: booking.pickupLocation?.address || (typeof pickupLocation === 'string' ? pickupLocation : pickupLocation?.address),
+        dropoffLocation: booking.dropoffLocation?.address || (typeof dropoffLocation === 'string' ? dropoffLocation : dropoffLocation?.address),
+        startDate: booking.rentalPeriod.start,
+        endDate: booking.rentalPeriod.end,
+        totalDays: booking.rentalPeriod.totalDays,
+        totalLKR: booking.priceBreakdown.totalLKR,
+        rentalType: booking.rentalType,
+        bookingId: booking._id.toString(),
+      };
+
+      Promise.allSettled([
+        sendVehicleBookingConfirmation(emailPayload),
+        sendVehicleBookingNotification(emailPayload),
+      ]).then((results) => {
+        results.forEach((r, i) => {
+          if (r.status === 'rejected') {
+            logger.error(`Vehicle booking email [${i === 0 ? 'confirmation' : 'notification'}] failed: ${r.reason?.message}`);
+          }
+        });
+      });
+    }
+
     sendCreated(res, booking, 'Vehicle booking confirmed successfully');
   })
 );
@@ -250,6 +285,19 @@ router.patch(
     await booking.save();
 
     sendSuccess(res, booking, `Booking status updated to ${booking.status}`);
+  })
+);
+
+// ── DELETE /api/v1/vehicle-bookings/:id - Admin Delete ────────────────────────
+router.delete(
+  '/:id',
+  protect,
+  restrict('admin', 'superadmin', 'manager'),
+  asyncHandler(async (req, res) => {
+    const booking = await VehicleBooking.findByIdAndDelete(req.params.id);
+    if (!booking) throw new AppError('Booking not found', 404);
+
+    sendSuccess(res, null, 'Vehicle booking deleted successfully');
   })
 );
 

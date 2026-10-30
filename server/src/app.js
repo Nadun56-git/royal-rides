@@ -54,12 +54,15 @@ app.use(
         imgSrc: [
           "'self'",
           'data:',
+          'blob:',
+          'http:',
+          'https:',
           'https://res.cloudinary.com',
           'https://*.tile.openstreetmap.org',
           'https://images.unsplash.com',
           'https://unpkg.com',
         ],
-        connectSrc: ["'self'", 'https://api.exchangerate-api.com'],
+        connectSrc: ["'self'", 'http:', 'https:', 'https://api.exchangerate-api.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://unpkg.com'],
         scriptSrc: ["'self'", "'unsafe-inline'"],
@@ -68,6 +71,7 @@ app.use(
       },
     },
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
 
@@ -170,6 +174,13 @@ app.use(`${API}/contact`, contactRoutes);
 app.use(`${API}/upload`, uploadRoutes);
 app.use(`${API}/admin`, adminRoutes);
 app.use(`${API}/settings`, settingRoutes);
+
+// ── Static Uploads Directory ─────────────────────────────────────────────────
+const uploadsDir = path.resolve(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
 
 // ── Swagger API Documentation ─────────────────────────────────────────────────
 // (Swagger YAML will be added in Step 9; placeholder for now)

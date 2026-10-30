@@ -26,6 +26,7 @@ import {
 import CurrencySwitcher from './CurrencySwitcher';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useWishlistStore } from '../../store/useWishlistStore';
+import { ScrollProgress, StaggerContainer, StaggerItem } from './animate-ui';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -70,55 +71,62 @@ export default function Navbar() {
           : 'bg-pearl/95 backdrop-blur-sm border-b border-navy/10 py-4'
       }`}
     >
+      {/* Scroll Progress Bar */}
+      <ScrollProgress color="#C9A84C" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* ── Brand Logo ────────────────────────────────────────────────────── */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-navy to-navy-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300 border border-gold/40">
-              <span className="font-serif text-gold text-xl font-bold tracking-tighter">RR</span>
-            </div>
-            <div className="flex flex-col">
-              <span className={`font-serif text-lg font-bold tracking-tight transition-colors leading-none ${
-                isHeroPage && !isScrolled ? 'text-white group-hover:text-gold' : 'text-navy group-hover:text-gold'
-              }`}>
-                ROYAL RIDES
-              </span>
-              <span className="text-[10px] tracking-[0.25em] uppercase text-gold font-semibold mt-1">
-                Ceylon Luxury Travel
-              </span>
-            </div>
+          <Link to="/" className="flex items-center group">
+            <motion.img
+              src="/images/royal_rider_logo.png"
+              alt="Royal Ride – Luxury Travel & Tours"
+              className="h-16 w-auto object-contain drop-shadow-md"
+              style={{ filter: 'drop-shadow(0 2px 8px rgba(192,192,192,0.35)) brightness(1.08) saturate(0.95) sepia(0.08) hue-rotate(0deg)' }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.1 }}
+              whileHover={{ scale: 1.05 }}
+            />
           </Link>
 
           {/* ── Desktop Navigation Links ───────────────────────────────────────── */}
           <nav className="hidden lg:flex items-center space-x-1">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = location.pathname === link.path;
-              return (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1.5 ${
-                    isActive
-                      ? isHeroPage && !isScrolled
-                        ? 'text-gold font-semibold bg-white/10'
-                        : 'text-navy font-semibold bg-navy/5'
-                      : isHeroPage && !isScrolled
-                        ? 'text-pearl-100 hover:text-white hover:bg-white/10'
-                        : 'text-content-body hover:text-navy hover:bg-black/5'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-gold' : isHeroPage && !isScrolled ? 'text-gold/80' : 'text-content-muted'}`} />
-                  <span>{link.name}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="navIndicator"
-                      className="absolute bottom-0 left-4 right-4 h-0.5 bg-gold rounded-full"
-                    />
-                  )}
-                </Link>
-              );
-            })}
+            <StaggerContainer
+              className="flex items-center space-x-1"
+              staggerDelay={0.07}
+              delayChildren={0.2}
+            >
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = location.pathname === link.path;
+                return (
+                  <StaggerItem key={link.name}>
+                    <Link
+                      to={link.path}
+                      className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1.5 ${
+                        isActive
+                          ? isHeroPage && !isScrolled
+                            ? 'text-gold font-semibold bg-white/10'
+                            : 'text-navy font-semibold bg-navy/5'
+                          : isHeroPage && !isScrolled
+                            ? 'text-pearl-100 hover:text-white hover:bg-white/10'
+                            : 'text-content-body hover:text-navy hover:bg-black/5'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-gold' : isHeroPage && !isScrolled ? 'text-gold/80' : 'text-content-muted'}`} />
+                      <span>{link.name}</span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="navIndicator"
+                          className="absolute bottom-0 left-4 right-4 h-0.5 bg-gold rounded-full"
+                        />
+                      )}
+                    </Link>
+                  </StaggerItem>
+                );
+              })}
+            </StaggerContainer>
           </nav>
 
           {/* ── Right Actions: Currency, Wishlist, User/Auth ──────────────────── */}
@@ -137,9 +145,14 @@ export default function Navbar() {
                 isHeroPage && !isScrolled ? 'text-white hover:text-gold' : 'text-navy hover:text-red-500'
               }`} />
               {savedIds.length > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 text-[10px] font-bold bg-gold text-white rounded-full flex items-center justify-center shadow-sm">
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="absolute top-1 right-1 w-4 h-4 text-[10px] font-bold bg-gold text-white rounded-full flex items-center justify-center shadow-sm"
+                >
                   {savedIds.length}
-                </span>
+                </motion.span>
               )}
             </Link>
 
@@ -185,7 +198,7 @@ export default function Navbar() {
 
                       {isManagerOrAdmin() && (
                         <Link
-                          to="/admin"
+                          to="/admindashboard"
                           className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-navy hover:bg-pearl transition-colors font-semibold"
                         >
                           <ShieldCheck className="w-4 h-4 text-emerald-600" />
@@ -236,7 +249,29 @@ export default function Navbar() {
               className="p-2 rounded-xl text-navy hover:bg-navy/5 transition-colors"
               aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <AnimatePresence mode="wait" initial={false}>
+                {mobileMenuOpen ? (
+                  <motion.span
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X className="w-6 h-6" />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu className="w-6 h-6" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </div>
         </div>
@@ -249,24 +284,36 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="lg:hidden bg-pearl/95 backdrop-blur-xl border-b border-navy/10 px-6 py-6 overflow-hidden"
           >
-            <div className="flex flex-col space-y-3">
-              {navLinks.map((link) => {
+            <div className="flex flex-col space-y-1">
+              {navLinks.map((link, i) => {
                 const Icon = link.icon;
                 return (
-                  <Link
+                  <motion.div
                     key={link.name}
-                    to={link.path}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-base font-semibold text-navy hover:bg-navy/5 transition-colors"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <Icon className="w-5 h-5 text-gold" />
-                    <span>{link.name}</span>
-                  </Link>
+                    <Link
+                      to={link.path}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-base font-semibold text-navy hover:bg-navy/5 transition-colors"
+                    >
+                      <Icon className="w-5 h-5 text-gold" />
+                      <span>{link.name}</span>
+                    </Link>
+                  </motion.div>
                 );
               })}
 
-              <div className="pt-3 border-t border-navy/10 flex flex-col gap-2">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: navLinks.length * 0.06 + 0.05 }}
+                className="pt-3 border-t border-navy/10 flex flex-col gap-2"
+              >
                 {isAuthenticated ? (
                   <>
                     <Link
@@ -278,7 +325,7 @@ export default function Navbar() {
                     </Link>
                     {isManagerOrAdmin() && (
                       <Link
-                        to="/admin"
+                        to="/admindashboard"
                         className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-emerald-600"
                       >
                         <ShieldCheck className="w-4 h-4" />
@@ -310,7 +357,7 @@ export default function Navbar() {
                     </Link>
                   </div>
                 )}
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         )}
