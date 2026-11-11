@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../store/useAuthStore';
-import api from '../services/api';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -64,28 +63,6 @@ export default function AdminLogin() {
     } else {
       setError(res.message || 'Authentication failed. Please verify credentials.');
       toast.error(res.message || 'Login failed');
-    }
-  };
-
-  const fillAdminCredentials = () => {
-    setEmail('admin@royalrides.lk');
-    setPassword('Admin@123456');
-    toast.success('Admin credentials autofilled!');
-  };
-
-  const fillManagerCredentials = () => {
-    setEmail('manager@royalrides.lk');
-    setPassword('Manager@123456');
-    toast.success('Manager credentials autofilled!');
-  };
-
-  const handleInitAdmin = async () => {
-    try {
-      const res = await api.post('/auth/init-admin');
-      toast.success(res.data?.message || 'Admin account ready!');
-      fillAdminCredentials();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to initialize admin credentials');
     }
   };
 
@@ -181,40 +158,6 @@ export default function AdminLogin() {
             )}
           </button>
         </form>
-
-        {/* Quick Demo Credentials */}
-        <div className="mt-6 pt-5 border-t border-white/10 space-y-2.5">
-          <span className="text-[11px] text-pearl-200/60 uppercase tracking-wider font-semibold block text-center">
-            One-Click System Access
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={fillAdminCredentials}
-              className="px-3 py-2 rounded-xl bg-navy-800 hover:bg-navy-700/80 border border-gold/30 text-gold text-xs font-medium transition-all text-center flex flex-col items-center gap-0.5"
-            >
-              <span className="font-bold text-white">Super Admin</span>
-              <span className="text-[10px] text-gold/80">admin@royalrides.lk</span>
-            </button>
-            <button
-              type="button"
-              onClick={fillManagerCredentials}
-              className="px-3 py-2 rounded-xl bg-navy-800 hover:bg-navy-700/80 border border-white/15 text-pearl-100 text-xs font-medium transition-all text-center flex flex-col items-center gap-0.5"
-            >
-              <span className="font-bold text-white">Fleet Manager</span>
-              <span className="text-[10px] text-pearl-200/60">manager@royalrides.lk</span>
-            </button>
-          </div>
-          <div className="text-center pt-1">
-            <button
-              type="button"
-              onClick={handleInitAdmin}
-              className="text-[11px] text-pearl-200/50 hover:text-gold transition-colors underline"
-            >
-              First time setup? Click to ensure Admin exists in DB
-            </button>
-          </div>
-        </div>
 
         <div className="mt-6 text-center">
           <Link
