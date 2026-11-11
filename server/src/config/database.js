@@ -9,7 +9,13 @@ import logger from './logger.js';
 let memoryServer = null;
 
 const connectDB = async () => {
+  const isProduction = process.env.NODE_ENV === 'production';
   const maskedUri = (process.env.MONGO_URI || '').replace(/:([^:@]+)@/, ':****@');
+
+  if (!process.env.MONGO_URI) {
+    logger.error('❌ MONGO_URI environment variable is not set. Set it in your Render dashboard.');
+    process.exit(1);
+  }
 
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
@@ -20,8 +26,15 @@ const connectDB = async () => {
     logger.info(`✅ MongoDB connected: ${conn.connection.host} (Database: ${conn.connection.name})`);
   } catch (error) {
     logger.warn(`⚠️ External MongoDB (${maskedUri}) not reachable: ${error.message}`);
-    logger.info('🚀 Launching embedded in-memory MongoDB engine for zero-configuration operation…');
 
+    if (isProduction) {
+      // In production, never fall back — crash loudly so the env var gets fixed
+      logger.error('❌ Cannot connect to MongoDB in production. Fix MONGO_URI on Render and redeploy.');
+      process.exit(1);
+    }
+
+    // Development only: fall back to in-memory MongoDB
+    logger.info('🚀 Launching embedded in-memory MongoDB engine for zero-configuration operation…');
     try {
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       memoryServer = await MongoMemoryServer.create({
