@@ -24,6 +24,46 @@ const connectDB = async () => {
     });
 
     logger.info(`✅ MongoDB connected: ${conn.connection.host} (Database: ${conn.connection.name})`);
+
+    // ── Auto-seed initial tourism dataset & super admin if database is empty ────────
+    try {
+      const { default: User } = await import('../models/User.js');
+      const { default: Destination } = await import('../models/Destination.js');
+      const [userCount, destCount] = await Promise.all([
+        User.countDocuments(),
+        Destination.countDocuments(),
+      ]);
+
+      if (userCount === 0 || destCount === 0) {
+        logger.info('🌱 Empty database detected. Auto-seeding initial dataset and super admin…');
+        const { seedDatabase } = await import('../seeds/seed.js');
+        await seedDatabase(false);
+        logger.info('✨ Auto-seed complete. Fleet, hotels, packages, and admin account are now live.');
+      } else {
+        const adminEmail = (process.env.ADMIN_SEED_EMAIL || 'admin@royalrides.lk').toLowerCase();
+        const existingAdmin = await User.findOne({ email: adminEmail });
+        if (!existingAdmin) {
+          logger.info(`👤 Super admin (${adminEmail}) not found. Creating default admin account…`);
+          await User.create({
+            firstName: 'Admin',
+            lastName: 'Royal',
+            email: adminEmail,
+            password: process.env.ADMIN_SEED_PASSWORD || 'Admin@123456',
+            role: 'super_admin',
+            isEmailVerified: true,
+            phone: '+94718282758',
+            preferredCurrency: 'LKR',
+          });
+          logger.info(`✅ Default super admin created: ${adminEmail}`);
+        } else if (process.env.RESET_ADMIN_PASSWORD === 'true') {
+          existingAdmin.password = process.env.ADMIN_SEED_PASSWORD || 'Admin@123456';
+          await existingAdmin.save();
+          logger.info(`🔑 Super admin (${adminEmail}) password reset to configured password.`);
+        }
+      }
+    } catch (seedErr) {
+      logger.error(`Auto-seed error: ${seedErr.message}`);
+    }
   } catch (error) {
     logger.warn(`⚠️ External MongoDB (${maskedUri}) not reachable: ${error.message}`);
 

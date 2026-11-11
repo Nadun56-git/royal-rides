@@ -91,61 +91,72 @@ export const seedDatabase = async (clear = true) => {
 
   // ── 1. Users ───────────────────────────────────────────────────────────────
   logger.info('👤 Seeding users…');
-  const adminUser = await User.create({
-    firstName: 'Admin',
-    lastName: 'Royal',
-    email: process.env.ADMIN_SEED_EMAIL || 'admin@royalrides.lk',
-    password: process.env.ADMIN_SEED_PASSWORD || 'Admin@123456',
-    role: 'super_admin',
-    isEmailVerified: true,
-    phone: '+94718282758',
-    preferredCurrency: 'LKR',
-  });
-
-  const manager = await User.create({
-    firstName: 'Nimal',
-    lastName: 'Perera',
-    email: 'manager@royalrides.lk',
-    password: 'Manager@123456',
-    role: 'manager',
-    isEmailVerified: true,
-    phone: '+94711234567',
-  });
-
-  const customers = await User.create([
-    {
-      firstName: 'James',
-      lastName: 'Wilson',
-      email: 'james.wilson@example.com',
-      password: 'Customer@123',
-      role: 'customer',
+  const adminEmail = (process.env.ADMIN_SEED_EMAIL || 'admin@royalrides.lk').toLowerCase();
+  let adminUser = await User.findOne({ email: adminEmail });
+  if (!adminUser) {
+    adminUser = await User.create({
+      firstName: 'Admin',
+      lastName: 'Royal',
+      email: adminEmail,
+      password: process.env.ADMIN_SEED_PASSWORD || 'Admin@123456',
+      role: 'super_admin',
       isEmailVerified: true,
-      nationality: 'British',
-      preferredCurrency: 'USD',
-    },
-    {
-      firstName: 'Ayasha',
-      lastName: 'Kumari',
-      email: 'ayasha@example.com',
-      password: 'Customer@123',
-      role: 'customer',
-      isEmailVerified: true,
-      nationality: 'Sri Lankan',
+      phone: '+94718282758',
       preferredCurrency: 'LKR',
-    },
-    {
-      firstName: 'Chen',
-      lastName: 'Wei',
-      email: 'chen.wei@example.com',
-      password: 'Customer@123',
-      role: 'customer',
-      isEmailVerified: true,
-      nationality: 'Chinese',
-      preferredCurrency: 'USD',
-    },
-  ]);
+    });
+  }
 
-  logger.info(`✅ Users seeded: 1 admin, 1 manager, ${customers.length} customers`);
+  let manager = await User.findOne({ email: 'manager@royalrides.lk' });
+  if (!manager) {
+    manager = await User.create({
+      firstName: 'Nimal',
+      lastName: 'Perera',
+      email: 'manager@royalrides.lk',
+      password: 'Manager@123456',
+      role: 'manager',
+      isEmailVerified: true,
+      phone: '+94711234567',
+    });
+  }
+
+  const customerCount = await User.countDocuments({ role: 'customer' });
+  let customers = [];
+  if (customerCount === 0) {
+    customers = await User.create([
+      {
+        firstName: 'James',
+        lastName: 'Wilson',
+        email: 'james.wilson@example.com',
+        password: 'Customer@123',
+        role: 'customer',
+        isEmailVerified: true,
+        nationality: 'British',
+        preferredCurrency: 'USD',
+      },
+      {
+        firstName: 'Ayasha',
+        lastName: 'Kumari',
+        email: 'ayasha@example.com',
+        password: 'Customer@123',
+        role: 'customer',
+        isEmailVerified: true,
+        nationality: 'Sri Lankan',
+        preferredCurrency: 'LKR',
+      },
+      {
+        firstName: 'Chen',
+        lastName: 'Wei',
+        email: 'chen.wei@example.com',
+        password: 'Customer@123',
+        role: 'customer',
+        isEmailVerified: true,
+        nationality: 'Chinese',
+        preferredCurrency: 'USD',
+      },
+    ]);
+  }
+
+  logger.info(`✅ Users seeded/verified: 1 admin, 1 manager, ${customers.length || customerCount} customers`);
 
   // ── 2. Destinations ────────────────────────────────────────────────────────
   logger.info('🗺️  Seeding destinations…');
@@ -315,14 +326,18 @@ export const seedDatabase = async (clear = true) => {
     },
   ];
 
-  const destinations = await Destination.insertMany(destinationsData);
+  let destinations = await Destination.find({});
+  if (destinations.length === 0) {
+    destinations = await Destination.insertMany(destinationsData);
+  }
   const destMap = {};
   destinations.forEach((d) => (destMap[d.slug] = d._id));
-  logger.info(`✅ Destinations seeded: ${destinations.length}`);
+  logger.info(`✅ Destinations seeded/verified: ${destinations.length}`);
 
   // ── 3. Facilities ──────────────────────────────────────────────────────────
   logger.info('🏥 Seeding facilities…');
-  await Facility.insertMany([
+  if ((await Facility.countDocuments()) === 0) {
+    await Facility.insertMany([
     {
       name: 'Sigiriya Police Station',
       type: 'police',
@@ -444,10 +459,13 @@ export const seedDatabase = async (clear = true) => {
     },
   ]);
   logger.info('✅ Facilities seeded: 10');
+  }
 
   // ── 4. Vehicles ────────────────────────────────────────────────────────────
   logger.info('🚗 Seeding vehicles…');
-  const vehicles = await Vehicle.insertMany([
+  let vehicles = await Vehicle.find({});
+  if (vehicles.length === 0) {
+    vehicles = await Vehicle.insertMany([
     {
       name: 'Toyota Prius Hybrid',
       slug: 'toyota-prius-hybrid',
@@ -666,11 +684,16 @@ export const seedDatabase = async (clear = true) => {
       createdBy: adminUser._id,
     },
   ]);
-  logger.info(`✅ Vehicles seeded: ${vehicles.length}`);
+  }
+  const vehicleMap = {};
+  vehicles.forEach((v) => (vehicleMap[v.slug] = v._id));
+  logger.info(`✅ Vehicles seeded/verified: ${vehicles.length}`);
 
   // ── 5. Hotels ──────────────────────────────────────────────────────────────
   logger.info('🏨 Seeding hotels…');
-  const hotels = await Hotel.insertMany([
+  let hotels = await Hotel.find({});
+  if (hotels.length === 0) {
+    hotels = await Hotel.insertMany([
     {
       name: 'Sigiriya Village Hotel',
       slug: 'sigiriya-village-hotel',
@@ -924,11 +947,16 @@ export const seedDatabase = async (clear = true) => {
       createdBy: adminUser._id,
     },
   ]);
-  logger.info(`✅ Hotels seeded: ${hotels.length}`);
+  }
+  const hotelMap = {};
+  hotels.forEach((h) => (hotelMap[h.slug] = h._id));
+  logger.info(`✅ Hotels seeded/verified: ${hotels.length}`);
 
   // ── 6. Tour Guides ─────────────────────────────────────────────────────────
   logger.info('🧭 Seeding tour guides…');
-  const guides = await TourGuide.insertMany([
+  let guides = await TourGuide.find({});
+  if (guides.length === 0) {
+    guides = await TourGuide.insertMany([
     {
       name: 'Suresh Jayawardena',
       bio: 'Born and raised in Kandy, Suresh has been guiding tourists for over 15 years. A passionate historian and storyteller, he specializes in cultural heritage tours of the Central Province. Fluent in English, German, and Japanese.',
@@ -1016,11 +1044,13 @@ export const seedDatabase = async (clear = true) => {
       createdBy: adminUser._id,
     },
   ]);
-  logger.info(`✅ Tour guides seeded: ${guides.length}`);
+  }
+  logger.info(`✅ Tour guides seeded/verified: ${guides.length}`);
 
   // ── 7. Travel Packages ─────────────────────────────────────────────────────
   logger.info('📦 Seeding travel packages…');
-  await TravelPackage.insertMany([
+  if ((await TravelPackage.countDocuments()) === 0) {
+    await TravelPackage.insertMany([
     {
       name: 'Cultural Triangle Explorer',
       slug: 'cultural-triangle-explorer',
@@ -1232,72 +1262,78 @@ export const seedDatabase = async (clear = true) => {
     },
   ]);
   logger.info(`✅ Travel packages seeded: 6`);
+  }
 
   // ── 8. Seasonal Rates ──────────────────────────────────────────────────────
   logger.info('📅 Seeding seasonal rates…');
-  await SeasonalRate.insertMany([
-    {
-      name: 'Festive Season Surcharge',
-      description: 'Peak season rates during Christmas and New Year',
-      type: 'seasonal_discount',
-      appliesTo: 'all',
-      validFrom: new Date('2026-12-15'),
-      validTo: new Date('2027-01-05'),
-      discountType: 'percentage',
-      discountValue: -20,  // Negative = surcharge (price increase)
-      isActive: true,
-      priority: 10,
-      createdBy: adminUser._id,
-    },
-    {
-      name: 'Shoulder Season Discount',
-      description: '15% off during May–June (low season)',
-      type: 'seasonal_discount',
-      appliesTo: 'hotels',
-      validFrom: new Date('2026-05-01'),
-      validTo: new Date('2026-06-30'),
-      discountType: 'percentage',
-      discountValue: 15,
-      isActive: true,
-      priority: 5,
-      createdBy: adminUser._id,
-    },
-    {
-      name: 'ROYAL10 — Loyalty Promo',
-      description: '10% off any booking over LKR 50,000 with code ROYAL10',
-      type: 'promo_code',
-      appliesTo: 'all',
-      validFrom: new Date('2026-01-01'),
-      validTo: new Date('2026-12-31'),
-      discountType: 'percentage',
-      discountValue: 10,
-      maxDiscountLKR: 15000,
-      minBookingValueLKR: 50000,
-      promoCode: 'ROYAL10',
-      maxUsage: 500,
-      perUserLimit: 1,
-      isActive: true,
-      priority: 1,
-      createdBy: adminUser._id,
-    },
-  ]);
-  logger.info('✅ Seasonal rates seeded: 3');
+  if ((await SeasonalRate.countDocuments()) === 0) {
+    await SeasonalRate.insertMany([
+      {
+        name: 'Festive Season Surcharge',
+        description: 'Peak season rates during Christmas and New Year',
+        type: 'seasonal_discount',
+        appliesTo: 'all',
+        validFrom: new Date('2026-12-15'),
+        validTo: new Date('2027-01-05'),
+        discountType: 'percentage',
+        discountValue: -20,  // Negative = surcharge (price increase)
+        isActive: true,
+        priority: 10,
+        createdBy: adminUser._id,
+      },
+      {
+        name: 'Shoulder Season Discount',
+        description: '15% off during May–June (low season)',
+        type: 'seasonal_discount',
+        appliesTo: 'hotels',
+        validFrom: new Date('2026-05-01'),
+        validTo: new Date('2026-06-30'),
+        discountType: 'percentage',
+        discountValue: 15,
+        isActive: true,
+        priority: 5,
+        createdBy: adminUser._id,
+      },
+      {
+        name: 'ROYAL10 — Loyalty Promo',
+        description: '10% off any booking over LKR 50,000 with code ROYAL10',
+        type: 'promo_code',
+        appliesTo: 'all',
+        validFrom: new Date('2026-01-01'),
+        validTo: new Date('2026-12-31'),
+        discountType: 'percentage',
+        discountValue: 10,
+        maxDiscountLKR: 15000,
+        minBookingValueLKR: 50000,
+        promoCode: 'ROYAL10',
+        maxUsage: 500,
+        perUserLimit: 1,
+        isActive: true,
+        priority: 1,
+        createdBy: adminUser._id,
+      },
+    ]);
+    logger.info('✅ Seasonal rates seeded: 3');
+  }
 
   // ── 9. Currency Rate ───────────────────────────────────────────────────────
   logger.info('💱 Seeding currency rate…');
-  await CurrencyRate.create({
-    fromCurrency: 'USD',
-    toCurrency: 'LKR',
-    rate: 327.50,  // 1 USD = 327.50 LKR (approximate — update via admin)
-    source: 'manual',
-    isActive: true,
-    updatedBy: adminUser._id,
-  });
-  logger.info('✅ Currency rate seeded: USD → LKR @ 327.50');
+  if ((await CurrencyRate.countDocuments()) === 0) {
+    await CurrencyRate.create({
+      fromCurrency: 'USD',
+      toCurrency: 'LKR',
+      rate: 327.50,  // 1 USD = 327.50 LKR (approximate — update via admin)
+      source: 'manual',
+      isActive: true,
+      updatedBy: adminUser._id,
+    });
+    logger.info('✅ Currency rate seeded: USD → LKR @ 327.50');
+  }
 
   // ── 10. Site Settings ──────────────────────────────────────────────────────
   logger.info('⚙️  Seeding site settings…');
-  await Setting.insertMany([
+  if ((await Setting.countDocuments()) === 0) {
+    await Setting.insertMany([
     { key: 'site_name', value: 'Royal Rides', type: 'string', group: 'general', label: 'Site Name', isPublic: true, updatedBy: adminUser._id },
     { key: 'site_tagline', value: 'Premier Sri Lankan Tourism & Travel', type: 'string', group: 'general', label: 'Tagline', isPublic: true, updatedBy: adminUser._id },
     { key: 'contact_phone', value: '0718282758', type: 'string', group: 'contact', label: 'Contact Phone', isPublic: true, updatedBy: adminUser._id },
@@ -1315,6 +1351,7 @@ export const seedDatabase = async (clear = true) => {
     { key: 'meta_description', value: 'Royal Rides — Sri Lanka\'s premier tourism and travel service. Book vehicles, hotels, and packages across Sri Lanka\'s most beautiful destinations.', type: 'string', group: 'seo', label: 'Default Meta Description', isPublic: true, updatedBy: adminUser._id },
   ]);
   logger.info('✅ Site settings seeded: 15');
+  }
 
   // ── Summary ─────────────────────────────────────────────────────────────────
   logger.info('\n' + '='.repeat(60));

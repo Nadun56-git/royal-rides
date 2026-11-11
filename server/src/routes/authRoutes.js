@@ -273,4 +273,42 @@ router.get('/me', protect, asyncHandler(async (req, res) => {
   return sendSuccess(res, { user });
 }));
 
+// ── Initialize or Reset Super Admin ──────────────────────────────────────────
+router.post(
+  '/init-admin',
+  asyncHandler(async (req, res) => {
+    const adminEmail = (process.env.ADMIN_SEED_EMAIL || 'admin@royalrides.lk').toLowerCase();
+    const adminPassword = process.env.ADMIN_SEED_PASSWORD || 'Admin@123456';
+
+    let admin = await User.findOne({ email: adminEmail }).select('+password');
+    if (!admin) {
+      admin = await User.create({
+        firstName: 'Admin',
+        lastName: 'Royal',
+        email: adminEmail,
+        password: adminPassword,
+        role: 'super_admin',
+        isEmailVerified: true,
+        phone: '+94718282758',
+        preferredCurrency: 'LKR',
+      });
+      return sendCreated(
+        res,
+        { email: admin.email, role: admin.role },
+        `Super admin account created successfully (${admin.email})`
+      );
+    }
+
+    // Reset password if requested or if force flag is passed
+    admin.password = adminPassword;
+    await admin.save();
+
+    return sendSuccess(
+      res,
+      { email: admin.email, role: admin.role },
+      `Super admin password reset to configured password (${admin.email})`
+    );
+  })
+);
+
 export default router;

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../store/useAuthStore';
+import api from '../services/api';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -76,6 +77,16 @@ export default function AdminLogin() {
     setEmail('manager@royalrides.lk');
     setPassword('Manager@123456');
     toast.success('Manager credentials autofilled!');
+  };
+
+  const handleInitAdmin = async () => {
+    try {
+      const res = await api.post('/auth/init-admin');
+      toast.success(res.data?.message || 'Admin account ready!');
+      fillAdminCredentials();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to initialize admin credentials');
+    }
   };
 
   return (
@@ -192,6 +203,15 @@ export default function AdminLogin() {
             >
               <span className="font-bold text-white">Fleet Manager</span>
               <span className="text-[10px] text-pearl-200/60">manager@royalrides.lk</span>
+            </button>
+          </div>
+          <div className="text-center pt-1">
+            <button
+              type="button"
+              onClick={handleInitAdmin}
+              className="text-[11px] text-pearl-200/50 hover:text-gold transition-colors underline"
+            >
+              First time setup? Click to ensure Admin exists in DB
             </button>
           </div>
         </div>
