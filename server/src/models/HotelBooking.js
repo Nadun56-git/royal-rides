@@ -88,7 +88,6 @@ const hotelBookingSchema = new mongoose.Schema(
 );
 
 // ── Indexes ───────────────────────────────────────────────────────────────────
-hotelBookingSchema.index({ bookingRef: 1 });
 hotelBookingSchema.index({ user: 1, status: 1 });
 hotelBookingSchema.index({ hotel: 1, checkIn: 1, checkOut: 1 });
 hotelBookingSchema.index({ 'room.roomTypeId': 1, checkIn: 1, checkOut: 1 });

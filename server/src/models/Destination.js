@@ -97,7 +97,6 @@ const destinationSchema = new mongoose.Schema(
 
 // ── Geospatial Index ──────────────────────────────────────────────────────────
 destinationSchema.index({ location: '2dsphere' });
-destinationSchema.index({ slug: 1 });
 destinationSchema.index({ isActive: 1, isFeatured: -1 });
 destinationSchema.index({ name: 'text', description: 'text' });
 

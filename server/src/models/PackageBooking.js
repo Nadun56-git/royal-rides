@@ -91,7 +91,6 @@ const packageBookingSchema = new mongoose.Schema(
   { timestamps: true, toJSON: { virtuals: true } }
 );
 
-packageBookingSchema.index({ bookingRef: 1 });
 packageBookingSchema.index({ user: 1, status: 1 });
 packageBookingSchema.index({ package: 1, startDate: 1 });
 packageBookingSchema.index({ status: 1, createdAt: -1 });

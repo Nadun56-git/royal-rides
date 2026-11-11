@@ -141,7 +141,6 @@ const vehicleSchema = new mongoose.Schema(
 
 // ── Indexes ───────────────────────────────────────────────────────────────────
 vehicleSchema.index({ category: 1, isAvailable: 1, isActive: 1 });
-vehicleSchema.index({ slug: 1 });
 vehicleSchema.index({ baseFee: 1, dailyRate: 1 });
 vehicleSchema.index({ '$**': 'text' }); // Full-text search
 

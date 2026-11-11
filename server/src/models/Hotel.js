@@ -154,7 +154,6 @@ const hotelSchema = new mongoose.Schema(
 
 // ── Geospatial Index ──────────────────────────────────────────────────────────
 hotelSchema.index({ location: '2dsphere' });
-hotelSchema.index({ slug: 1 });
 hotelSchema.index({ destination: 1, isActive: 1 });
 hotelSchema.index({ starRating: 1, averageRating: -1 });
 hotelSchema.index({ name: 'text', description: 'text', city: 'text' });

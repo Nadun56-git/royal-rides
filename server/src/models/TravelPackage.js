@@ -124,7 +124,6 @@ const travelPackageSchema = new mongoose.Schema(
 );
 
 // ── Indexes ───────────────────────────────────────────────────────────────────
-travelPackageSchema.index({ slug: 1 });
 travelPackageSchema.index({ category: 1, isActive: 1 });
 travelPackageSchema.index({ basePricePerPersonLKR: 1 });
 travelPackageSchema.index({ isFeatured: 1, isPopular: 1 });

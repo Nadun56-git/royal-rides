@@ -40,7 +40,6 @@ const settingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-settingSchema.index({ key: 1 });
 settingSchema.index({ group: 1, isPublic: 1 });
 
 const Setting = mongoose.model('Setting', settingSchema);

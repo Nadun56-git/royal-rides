@@ -138,7 +138,6 @@ const vehicleBookingSchema = new mongoose.Schema(
 );
 
 // ── Indexes ───────────────────────────────────────────────────────────────────
-vehicleBookingSchema.index({ bookingRef: 1 });
 vehicleBookingSchema.index({ user: 1, status: 1 });
 vehicleBookingSchema.index({ vehicle: 1, 'rentalPeriod.start': 1, 'rentalPeriod.end': 1 });
 vehicleBookingSchema.index({ status: 1, createdAt: -1 });
