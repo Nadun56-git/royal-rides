@@ -9,8 +9,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Shield, Star, Users, ChevronRight, Clock,
-  Sparkles, PhoneCall, CheckCircle2,
+  Shield, Star, Users, ChevronRight,
+  Sparkles, PhoneCall,
 } from "lucide-react";
 import HeroSearchWidget from "../components/home/HeroSearchWidget";
 import InteractiveSriLankaMap from "../components/map/InteractiveSriLankaMap";
@@ -24,7 +24,6 @@ import {
   StaggerContainer,
   StaggerItem,
   SplittingText,
-  TypingText,
   CountingNumber,
   ScrollProgress,
 } from "../components/ui/animate-ui";
@@ -80,16 +79,6 @@ export default function Home() {
         <motion.div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-gold/8 blur-[80px] pointer-events-none z-0" animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.6, 0.4] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
 
         <div className="relative z-10 text-center max-w-5xl mx-auto space-y-6 mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-navy-950/75 backdrop-blur-xl border border-gold/50 text-gold text-xs font-bold uppercase tracking-widest shadow-gold-glow"
-          >
-            <Sparkles className="w-3.5 h-3.5 animate-pulseSubtle" />
-            <span>Royal Rides &mdash; Sri Lanka&apos;s Premier Chauffeur Fleet</span>
-          </motion.div>
-
           <motion.h1
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
@@ -110,37 +99,10 @@ export default function Home() {
               />
             </span>
           </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            className="text-base sm:text-xl text-white/80 max-w-2xl mx-auto font-light leading-relaxed"
-          >
-            <TypingText
-              text="Chauffeur-driven executive fleets, handpicked colonial sanctuaries, and custom private expeditions across paradise."
-              speed={28}
-              delay={1.0}
-              showCursor={false}
-            />
-          </motion.p>
-
-          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }} className="flex flex-wrap justify-center gap-2.5 pt-2">
-            {[{ icon: CheckCircle2, label: "SLTDA Certified" }, { icon: Shield, label: "Zero Hidden Fees" }, { icon: Star, label: "4.9★ Rated" }, { icon: Clock, label: "24/7 Concierge" }].map(({ icon: Icon, label }) => (
-              <span key={label} className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/85 text-[11px] font-semibold tracking-wide">
-                <Icon className="w-3 h-3 text-gold flex-shrink-0" />{label}
-              </span>
-            ))}
-          </motion.div>
         </div>
 
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.65, ease: [0.22, 1, 0.36, 1] }} className="relative z-10 w-full">
           <HeroSearchWidget />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6, duration: 0.9 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-white/40 font-medium">Scroll to explore</span>
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }} className="w-px h-8 bg-gradient-to-b from-gold/50 to-transparent rounded-full" />
         </motion.div>
       </section>
 
