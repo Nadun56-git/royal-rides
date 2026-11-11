@@ -42,7 +42,7 @@ const seasonalRateSchema = new mongoose.Schema(
     minBookingValueLKR: { type: Number, default: 0 },
 
     // ── Promo Code ────────────────────────────────────────────────────────────
-    promoCode: { type: String, uppercase: true, sparse: true },
+    promoCode: { type: String, uppercase: true },
     maxUsage: Number,    // Total usage limit
     usageCount: { type: Number, default: 0 },
     perUserLimit: { type: Number, default: 1 },

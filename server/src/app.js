@@ -45,6 +45,11 @@ import settingRoutes from './routes/settingRoutes.js';
 
 const app = express();
 
+// ── Trust Render/Vercel/Cloudflare reverse proxy ──────────────────────────────
+// Required so express-rate-limit can correctly read the real client IP
+// from the X-Forwarded-For header set by Render's load balancer.
+app.set('trust proxy', 1);
+
 // ── Security Headers ──────────────────────────────────────────────────────────
 app.use(
   helmet({

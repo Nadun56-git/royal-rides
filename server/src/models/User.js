@@ -119,7 +119,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // ── Indexes ───────────────────────────────────────────────────────────────────
-userSchema.index({ email: 1 });
+// email already has { unique: true } inline — no duplicate needed
 userSchema.index({ role: 1, isActive: 1 });
 userSchema.index({ createdAt: -1 });
 
