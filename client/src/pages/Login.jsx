@@ -33,16 +33,6 @@ export default function Login() {
     }
   };
 
-  const fillAdminDemo = () => {
-    setEmail('admin@royalrides.lk');
-    setPassword('Admin@123456');
-  };
-
-  const fillCustomerDemo = () => {
-    setEmail('james.wilson@example.com');
-    setPassword('Customer@123');
-  };
-
   return (
     <div className="pt-28 pb-20 min-h-[90vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md glass-card rounded-3xl p-8 sm:p-10 border border-navy/15 shadow-elevated space-y-6">
@@ -110,30 +100,7 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Quick Demo Credentials */}
-        <div className="pt-2 border-t border-navy/10 space-y-2 text-center text-xs">
-          <span className="text-[10px] text-content-muted uppercase tracking-wider block">
-            Developer / Demonstration Access:
-          </span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={fillAdminDemo}
-              className="flex-1 py-1.5 rounded-lg bg-navy/5 hover:bg-navy/10 text-navy text-[11px] font-semibold transition-colors"
-            >
-              Demo Admin
-            </button>
-            <button
-              type="button"
-              onClick={fillCustomerDemo}
-              className="flex-1 py-1.5 rounded-lg bg-navy/5 hover:bg-navy/10 text-navy text-[11px] font-semibold transition-colors"
-            >
-              Demo Traveler
-            </button>
-          </div>
-        </div>
-
-        <p className="text-center text-xs text-content-body">
+        <p className="text-center text-xs text-content-body pt-2 border-t border-navy/10">
           Don't have an account?{' '}
           <Link to="/register" className="font-bold text-gold hover:underline">
             Register Here
