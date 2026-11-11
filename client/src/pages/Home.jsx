@@ -311,11 +311,11 @@ export default function Home() {
               <Sparkles className="w-4 h-4" /> Customized Chauffeur Arrangements
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-snug">Require a Custom Chauffeur Route or Diplomatic Escort?</h2>
-            <p className="text-sm text-pearl-200/70 leading-relaxed">Our Colombo operations desk is on standby 24/7 to orchestrate complex multi-city circuits, wedding motorcades, or corporate delegate transport.</p>
+            <p className="text-sm text-pearl-200/70 leading-relaxed">Our concierge operations desk is on standby 24/7 to orchestrate complex multi-city circuits, wedding motorcades, or corporate delegate transport.</p>
           </SlideIn>
           <SlideIn from="right" className="flex flex-col sm:flex-row gap-3 z-10 relative shrink-0">
-            <a href="tel:0718282758" className="btn-gold px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-premium hover:scale-105 active:scale-95 transition-transform duration-300">
-              <PhoneCall className="w-4 h-4" /><span>Call +94 71 828 2758</span>
+            <a href="tel:+94772383111" className="btn-gold px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-premium hover:scale-105 active:scale-95 transition-transform duration-300">
+              <PhoneCall className="w-4 h-4" /><span>Call +94 77 238 3111</span>
             </a>
             <Link to="/contact" className="px-6 py-3.5 rounded-2xl border border-white/25 text-xs sm:text-sm font-bold text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300 text-center">Send Custom Inquiry</Link>
           </SlideIn>

@@ -101,7 +101,7 @@ export const seedDatabase = async (clear = true) => {
       password: process.env.ADMIN_SEED_PASSWORD || 'Admin@123456',
       role: 'super_admin',
       isEmailVerified: true,
-      phone: '+94718282758',
+      phone: '+94772383111',
       preferredCurrency: 'LKR',
     });
   }
@@ -1336,10 +1336,10 @@ export const seedDatabase = async (clear = true) => {
     await Setting.insertMany([
     { key: 'site_name', value: 'Royal Rides', type: 'string', group: 'general', label: 'Site Name', isPublic: true, updatedBy: adminUser._id },
     { key: 'site_tagline', value: 'Premier Sri Lankan Tourism & Travel', type: 'string', group: 'general', label: 'Tagline', isPublic: true, updatedBy: adminUser._id },
-    { key: 'contact_phone', value: '0718282758', type: 'string', group: 'contact', label: 'Contact Phone', isPublic: true, updatedBy: adminUser._id },
-    { key: 'contact_email', value: 'Info@uncage.lk', type: 'string', group: 'contact', label: 'Contact Email', isPublic: true, updatedBy: adminUser._id },
-    { key: 'contact_address', value: 'Colombo, Sri Lanka', type: 'string', group: 'contact', label: 'Address', isPublic: true, updatedBy: adminUser._id },
-    { key: 'whatsapp_number', value: '94718282758', type: 'string', group: 'contact', label: 'WhatsApp Number', isPublic: true, updatedBy: adminUser._id },
+    { key: 'contact_phone', value: '+94772383111', type: 'string', group: 'contact', label: 'Contact Phone', isPublic: true, updatedBy: adminUser._id },
+    { key: 'contact_email', value: 'royalrider.service@gmail.com', type: 'string', group: 'contact', label: 'Contact Email', isPublic: true, updatedBy: adminUser._id },
+    { key: 'contact_address', value: '378, Rajagiriya Road, Rajagiriya, Sri Lanka', type: 'string', group: 'contact', label: 'Address', isPublic: true, updatedBy: adminUser._id },
+    { key: 'whatsapp_number', value: '94772383111', type: 'string', group: 'contact', label: 'WhatsApp Number', isPublic: true, updatedBy: adminUser._id },
     { key: 'social_facebook', value: 'https://facebook.com/royalrides.lk', type: 'string', group: 'social', label: 'Facebook URL', isPublic: true, updatedBy: adminUser._id },
     { key: 'social_instagram', value: 'https://instagram.com/royalrides.lk', type: 'string', group: 'social', label: 'Instagram URL', isPublic: true, updatedBy: adminUser._id },
     { key: 'emergency_police', value: '119', type: 'string', group: 'general', label: 'Emergency Police', isPublic: true, updatedBy: adminUser._id },

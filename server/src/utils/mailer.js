@@ -92,9 +92,9 @@ function emailWrapper(innerHtml) {
     </div>
     <div class="footer">
       <p>
-        Royal Rides &bull; No. 45, Galle Face Terrace, Colombo 03, Sri Lanka<br/>
-        Hotline: <a href="tel:+94718282758">+94 71 828 2758</a> &bull;
-        <a href="mailto:nadunekanayake56@gmail.com">nadunekanayake56@gmail.com</a>
+        Royal Rides &bull; 378, Rajagiriya Road, Rajagiriya, Sri Lanka<br/>
+        Hotline: <a href="tel:+94772383111">+94 77 238 3111</a> &bull;
+        <a href="mailto:royalrider.service@gmail.com">royalrider.service@gmail.com</a>
       </p>
       <p style="margin-top:8px; color:#556;">&copy; ${new Date().getFullYear()} Royal Rides. All rights reserved.</p>
     </div>
@@ -135,7 +135,7 @@ export async function sendContactConfirmation({ name, email, subject, inquiryTyp
 
     <p>
       If your matter is urgent, please call our 24/7 hotline at
-      <strong>+94 71 828 2758</strong> or WhatsApp us directly.
+      <strong>+94 77 238 3111</strong> or WhatsApp us directly.
     </p>
     <p style="color:#888; font-size:12px;">
       Please do not reply to this email. Use our contact channels above.
@@ -146,7 +146,7 @@ export async function sendContactConfirmation({ name, email, subject, inquiryTyp
     to: email,
     subject: `Royal Rides — We received your inquiry: "${subject}"`,
     html,
-    text: `Hi ${name},\n\nThank you for contacting Royal Rides!\n\nWe have received your inquiry (${subject}) and will respond within 2 hours.\n\nFor urgent matters call: +94 71 828 2758\n\nRoyal Rides Team`,
+    text: `Hi ${name},\n\nThank you for contacting Royal Rides!\n\nWe have received your inquiry (${subject}) and will respond within 2 hours.\n\nFor urgent matters call: +94 77 238 3111\n\nRoyal Rides Team`,
   });
 }
 
@@ -227,14 +227,14 @@ export async function sendVehicleBookingConfirmation({
       </table>
     </div>
 
-    <p>Free cancellation up to 48 hours prior to pickup. For urgent changes call <strong>+94 71 828 2758</strong>.</p>
+    <p>Free cancellation up to 48 hours prior to pickup. For urgent changes call <strong>+94 77 238 3111</strong>.</p>
   `);
 
   return sendMail({
     to: email,
     subject: `Royal Rides — Vehicle Booking Confirmed [${bookingRef}]`,
     html,
-    text: `Hi ${name},\n\nYour vehicle booking is confirmed!\n\nRef: ${bookingRef}\nVehicle: ${vehicleName}\nPickup: ${pickupLocation}\nDrop-off: ${dropoffLocation}\nDates: ${new Date(startDate).toDateString()} → ${new Date(endDate).toDateString()}\nTotal: LKR ${Number(totalLKR).toLocaleString()}\n\nRoyal Rides | +94 71 828 2758`,
+    text: `Hi ${name},\n\nYour vehicle booking is confirmed!\n\nRef: ${bookingRef}\nVehicle: ${vehicleName}\nPickup: ${pickupLocation}\nDrop-off: ${dropoffLocation}\nDates: ${new Date(startDate).toDateString()} → ${new Date(endDate).toDateString()}\nTotal: LKR ${Number(totalLKR).toLocaleString()}\n\nRoyal Rides | +94 77 238 3111`,
   });
 }
 
@@ -306,14 +306,14 @@ export async function sendHotelBookingConfirmation({
       </table>
     </div>
 
-    <p>For modifications or special requests call <strong>+94 71 828 2758</strong> or reply to our team.</p>
+    <p>For modifications or special requests call <strong>+94 77 238 3111</strong> or reply to our team.</p>
   `);
 
   return sendMail({
     to: email,
     subject: `Royal Rides — Hotel Booking Confirmed [${bookingRef}]`,
     html,
-    text: `Hi ${name},\n\nYour hotel booking is confirmed!\n\nRef: ${bookingRef}\nHotel: ${hotelName}, ${hotelCity}\nRoom: ${roomTypeName}\nCheck-In: ${new Date(checkIn).toDateString()}\nCheck-Out: ${new Date(checkOut).toDateString()}\nNights: ${nights}\nTotal: LKR ${Number(totalLKR).toLocaleString()}\n\nRoyal Rides | +94 71 828 2758`,
+    text: `Hi ${name},\n\nYour hotel booking is confirmed!\n\nRef: ${bookingRef}\nHotel: ${hotelName}, ${hotelCity}\nRoom: ${roomTypeName}\nCheck-In: ${new Date(checkIn).toDateString()}\nCheck-Out: ${new Date(checkOut).toDateString()}\nNights: ${nights}\nTotal: LKR ${Number(totalLKR).toLocaleString()}\n\nRoyal Rides | +94 77 238 3111`,
   });
 }
 
@@ -384,14 +384,14 @@ export async function sendPackageBookingConfirmation({
       </table>
     </div>
 
-    <p>Questions? Call our 24/7 concierge at <strong>+94 71 828 2758</strong>.</p>
+    <p>Questions? Call our 24/7 concierge at <strong>+94 77 238 3111</strong>.</p>
   `);
 
   return sendMail({
     to: email,
     subject: `Royal Rides — Tour Package Confirmed [${bookingRef}]`,
     html,
-    text: `Hi ${name},\n\nYour tour package is confirmed!\n\nRef: ${bookingRef}\nPackage: ${packageName}\nDeparture: ${new Date(startDate).toDateString()}\nGroup Size: ${groupSize}\nTotal: LKR ${Number(totalLKR).toLocaleString()}\n\nRoyal Rides | +94 71 828 2758`,
+    text: `Hi ${name},\n\nYour tour package is confirmed!\n\nRef: ${bookingRef}\nPackage: ${packageName}\nDeparture: ${new Date(startDate).toDateString()}\nGroup Size: ${groupSize}\nTotal: LKR ${Number(totalLKR).toLocaleString()}\n\nRoyal Rides | +94 77 238 3111`,
   });
 }
 

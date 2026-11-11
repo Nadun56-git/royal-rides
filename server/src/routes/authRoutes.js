@@ -289,7 +289,7 @@ router.post(
         password: adminPassword,
         role: 'super_admin',
         isEmailVerified: true,
-        phone: '+94718282758',
+        phone: '+94772383111',
         preferredCurrency: 'LKR',
       });
       return sendCreated(

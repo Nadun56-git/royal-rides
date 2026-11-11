@@ -45,25 +45,25 @@ export default function Footer() {
             <div className="space-y-2 pt-2 text-sm text-pearl-200">
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-gold shrink-0" />
-                <a href="tel:0718282758" className="hover:text-gold transition-colors font-medium group">
+                <a href="tel:+94772383111" className="hover:text-gold transition-colors font-medium group">
                   <span className="relative">
-                    +94 71 828 2758
+                    +94 77 238 3111
                     <span className="absolute inset-x-0 bottom-0 h-px bg-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                   </span>
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-gold shrink-0" />
-                <a href="mailto:Info@uncage.lk" className="hover:text-gold transition-colors group">
+                <a href="mailto:royalrider.service@gmail.com" className="hover:text-gold transition-colors group">
                   <span className="relative">
-                    Info@uncage.lk
+                    royalrider.service@gmail.com
                     <span className="absolute inset-x-0 bottom-0 h-px bg-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                   </span>
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-gold shrink-0" />
-                <span className="text-pearl-200/80">No. 45, Galle Face Terrace, Colombo 03, Sri Lanka</span>
+                <span className="text-pearl-200/80">378, Rajagiriya Road, Rajagiriya, Sri Lanka</span>
               </div>
             </div>
           </FadeIn>

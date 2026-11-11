@@ -6,7 +6,7 @@ import React from 'react';
 import { MessageSquare } from 'lucide-react';
 
 export default function WhatsAppButton() {
-  const phone = '94718282758';
+  const phone = '94772383111';
   const message = encodeURIComponent(
     'Hello Royal Rides Concierge, I would like to inquire about booking a luxury travel experience in Sri Lanka.'
   );

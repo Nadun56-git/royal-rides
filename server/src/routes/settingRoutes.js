@@ -15,15 +15,15 @@ import { protect, restrict } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 const DEFAULT_SETTINGS = {
-  site_phone: '0718282758',
-  site_email: 'Info@uncage.lk',
+  site_phone: '+94772383111',
+  site_email: 'royalrider.service@gmail.com',
   emergency_police: '119',
   emergency_tourist_police: '1912',
   emergency_ambulance: '1990',
   emergency_fire: '110',
   company_name: 'Royal Rides Sri Lanka',
-  company_address: 'No. 45, Galle Face Terrace, Colombo 03, Sri Lanka',
-  whatsapp_number: '+94718282758',
+  company_address: '378, Rajagiriya Road, Rajagiriya, Sri Lanka',
+  whatsapp_number: '+94772383111',
   social_facebook: 'https://facebook.com/royalrides',
   social_instagram: 'https://instagram.com/royalridessl',
 };

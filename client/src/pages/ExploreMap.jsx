@@ -55,8 +55,8 @@ export default function ExploreMap() {
           </div>
           <div>
             <span className="text-[10px] text-content-muted uppercase block font-semibold">Royal Rides Concierge</span>
-            <a href="tel:0718282758" className="font-serif text-lg font-bold text-navy hover:text-gold">
-              0718282758
+            <a href="tel:+94772383111" className="font-serif text-lg font-bold text-navy hover:text-gold">
+              +94 77 238 3111
             </a>
           </div>
         </div>

@@ -81,7 +81,7 @@ export default function Contact() {
         </h1>
         <p className="text-sm sm:text-base text-content-body leading-relaxed">
           Whether you require a diplomatic motorcade, custom private helicopter transfer,
-          or villa buyout across the south coast, our Colombo team is at your sovereign service.
+          or villa buyout across the south coast, our concierge team is at your sovereign service.
         </p>
       </BlurIn>
 
@@ -96,9 +96,9 @@ export default function Contact() {
 
           <div className="space-y-4 text-xs text-content-body">
             {[
-              { icon: Phone, label: 'Official Hotline:', content: <a href="tel:0718282758" className="hover:text-gold transition-colors font-medium text-sm">+94 71 828 2758</a> },
-              { icon: Mail, label: 'Email Inquiries:', content: <a href="mailto:Info@uncage.lk" className="hover:text-gold transition-colors text-sm">Info@uncage.lk</a> },
-              { icon: MapPin, label: 'Colombo Office:', content: <span>No. 45, Galle Face Terrace, Colombo 03, Sri Lanka</span> },
+              { icon: Phone, label: 'Official Hotline:', content: <a href="tel:+94772383111" className="hover:text-gold transition-colors font-medium text-sm">+94 77 238 3111</a> },
+              { icon: Mail, label: 'Email Inquiries:', content: <a href="mailto:royalrider.service@gmail.com" className="hover:text-gold transition-colors text-sm">royalrider.service@gmail.com</a> },
+              { icon: MapPin, label: 'Headquarters:', content: <span>378, Rajagiriya Road, Rajagiriya, Sri Lanka</span> },
               { icon: Clock, label: 'Operating Hours:', content: <span>24 Hours / 7 Days a Week Chauffeur Dispatch</span> },
             ].map(({ icon: Icon, label, content }) => (
               <StaggerItem key={label}>
@@ -159,7 +159,7 @@ export default function Contact() {
                 Inquiry Received with Distinction
               </h4>
               <p className="text-xs text-content-body max-w-md mx-auto">
-                Thank you for reaching out to Royal Rides. Our Colombo operations director
+                Thank you for reaching out to Royal Rides. Our concierge operations director
                 will review your specifications and contact you within 2 hours.
               </p>
               <button

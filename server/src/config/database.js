@@ -51,7 +51,7 @@ const connectDB = async () => {
             password: process.env.ADMIN_SEED_PASSWORD || 'Admin@123456',
             role: 'super_admin',
             isEmailVerified: true,
-            phone: '+94718282758',
+            phone: '+94772383111',
             preferredCurrency: 'LKR',
           });
           logger.info(`✅ Default super admin created: ${adminEmail}`);
@@ -60,6 +60,22 @@ const connectDB = async () => {
           await existingAdmin.save();
           logger.info(`🔑 Super admin (${adminEmail}) password reset to configured password.`);
         }
+      }
+
+      // Synchronize contact settings in MongoDB
+      try {
+        const { default: Setting } = await import('../models/Setting.js');
+        await Promise.all([
+          Setting.updateOne({ key: 'contact_phone' }, { $set: { value: '+94772383111' } }),
+          Setting.updateOne({ key: 'site_phone' }, { $set: { value: '+94772383111' } }),
+          Setting.updateOne({ key: 'contact_email' }, { $set: { value: 'royalrider.service@gmail.com' } }),
+          Setting.updateOne({ key: 'site_email' }, { $set: { value: 'royalrider.service@gmail.com' } }),
+          Setting.updateOne({ key: 'contact_address' }, { $set: { value: '378, Rajagiriya Road, Rajagiriya, Sri Lanka' } }),
+          Setting.updateOne({ key: 'company_address' }, { $set: { value: '378, Rajagiriya Road, Rajagiriya, Sri Lanka' } }),
+          Setting.updateOne({ key: 'whatsapp_number' }, { $set: { value: '94772383111' } }),
+        ]);
+      } catch (syncErr) {
+        logger.debug(`Settings sync note: ${syncErr.message}`);
       }
     } catch (seedErr) {
       logger.error(`Auto-seed error: ${seedErr.message}`);
